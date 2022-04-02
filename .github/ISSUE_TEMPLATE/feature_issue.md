@@ -1,7 +1,7 @@
 ---
 name: FEATURE_ISSUE
 about: 기능 추가/수정/삭제 요청
-title: "[FEATURE] #n title"
+title: "[FEATURE] title"
 labels: FEAT
 assignees: iqpizza6349
 
