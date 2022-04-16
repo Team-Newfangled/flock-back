@@ -1,6 +1,6 @@
 package com.newfangled.flockbackend.domain.account.entity;
 
-import com.newfangled.flockbackend.domain.account.entity.embed.OAuth;
+import com.newfangled.flockbackend.domain.account.embed.OAuth;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

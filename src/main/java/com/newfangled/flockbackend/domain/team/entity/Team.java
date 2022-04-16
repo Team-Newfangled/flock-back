@@ -19,4 +19,6 @@ public class Team {
 
     @NotNull
     private String name;
+
+    
 }
