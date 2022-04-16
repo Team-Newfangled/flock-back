@@ -28,8 +28,7 @@ public class Account {
     private Provider provider;
 
     @NotNull
-    @Lob @Basic(fetch = FetchType.LAZY)
-    @Column(columnDefinition = "TINYBLOB")
-    private byte[] picture;
+    @Column(name = "picture_url")
+    private String pictureUrl;
 
 }
