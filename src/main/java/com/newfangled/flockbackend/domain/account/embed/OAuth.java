@@ -1,4 +1,4 @@
-package com.newfangled.flockbackend.domain.account.entity.embed;
+package com.newfangled.flockbackend.domain.account.embed;
 
 import com.newfangled.flockbackend.domain.account.type.Provider;
 import lombok.AllArgsConstructor;
