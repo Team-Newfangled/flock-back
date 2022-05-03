@@ -1,16 +1,12 @@
 package com.newfangled.flockbackend.domain.account.embed;
 
-import com.newfangled.flockbackend.domain.account.type.Provider;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -19,6 +15,8 @@ import javax.validation.constraints.NotNull;
 @Embeddable
 public class OAuth {
 
+    private String oauthId;
+
     @NotNull
     private String email;
 
@@ -26,11 +24,13 @@ public class OAuth {
     private String name;
 
     @NotNull
-    @Enumerated(EnumType.STRING)
-    @ColumnDefault("'GOOGLE'")
-    private Provider provider;
-
-    @NotNull
     @Column(name = "profile_img")
     private String profileImage;
+
+    public void update(String oauthId, String email, String imageUrl) {
+        this.oauthId = oauthId;
+        this.email = email;
+        this.profileImage = imageUrl;
+    }
+
 }

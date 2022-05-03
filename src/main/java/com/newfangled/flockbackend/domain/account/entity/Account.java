@@ -1,6 +1,7 @@
 package com.newfangled.flockbackend.domain.account.entity;
 
 import com.newfangled.flockbackend.domain.account.embed.OAuth;
+import com.newfangled.flockbackend.domain.account.type.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,4 +20,13 @@ public class Account {
 
     @Embedded
     private OAuth oAuth;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    public Account update(String oauthId, String email, String imageUrl) {
+        this.oAuth.update(oauthId, email, imageUrl);
+        return this;
+    }
+
 }
