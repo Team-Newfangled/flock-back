@@ -1,0 +1,33 @@
+package com.newfangled.flockbackend.domain.account.dto;
+
+import com.newfangled.flockbackend.domain.account.type.Role;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+public class OAuthLoginResponse {
+    private Long id;
+    private String name;
+    private String email;
+    private String imageUrl;
+    private Role role;
+    private String tokenType;
+    private String accessToken;
+    private String refreshToken;
+
+    @Builder
+    public OAuthLoginResponse(Long id, String name, String email, String imageUrl, Role role, String tokenType, String accessToken, String refreshToken) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.imageUrl = imageUrl;
+        this.role = role;
+        this.tokenType = tokenType;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
+
+
+}
