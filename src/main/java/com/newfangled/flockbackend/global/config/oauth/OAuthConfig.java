@@ -1,4 +1,4 @@
-package com.newfangled.flockbackend.global.config;
+package com.newfangled.flockbackend.global.config.oauth;
 
 import com.newfangled.flockbackend.domain.account.repository.InMemoryProviderRepository;
 import com.newfangled.flockbackend.domain.account.type.OAuthProvider;
