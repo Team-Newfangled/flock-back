@@ -7,6 +7,7 @@ import com.newfangled.flockbackend.domain.account.entity.Account;
 import com.newfangled.flockbackend.domain.account.repository.AccountRepository;
 import com.newfangled.flockbackend.domain.account.repository.InMemoryProviderRepository;
 import com.newfangled.flockbackend.domain.account.type.OAuthProvider;
+import com.newfangled.flockbackend.global.jwt.dto.RefreshToken;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import com.newfangled.flockbackend.global.type.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class OAuthService {
     private final InMemoryProviderRepository inMemoryProviderRepository;
     private final AccountRepository accountRepository;
     private final JwtTokenProvider jwtTokenProvider;
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     @Value("${jwt.refresh-token.expire-length:10000}")
     private long refreshTokenValidityInMilliseconds;
@@ -50,14 +51,15 @@ public class OAuthService {
         // 유저 DB에 저장
         Account account = saveOrUpdate(accountProfileDto);
 
-        String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(account.getId()));
-        String refreshToken = jwtTokenProvider.createRefreshToken();
+        String accessToken = jwtTokenProvider.createToken(account.getId(), true);
+        String refreshToken = jwtTokenProvider.createToken(account.getId(), false);
 
         // Redis 에 데이터 삽입
-        ValueOperations<String, String> operations = redisTemplate.opsForValue();
-        operations.set(String.valueOf(account.getId()), refreshToken);
-        redisTemplate.expire(String.valueOf(account.getId()), refreshTokenValidityInMilliseconds,
-                TimeUnit.MILLISECONDS);
+        jwtTokenProvider.insertRefreshToken(
+                redisTemplate,
+                String.valueOf(account.getId()),
+                refreshToken
+        );
 
         return OAuthLoginResponse.builder()
                 .id(account.getId())
@@ -65,7 +67,7 @@ public class OAuthService {
                 .email(account.getOAuth().getEmail())
                 .imageUrl(account.getOAuth().getProfileImage())
                 .role(account.getRole())
-                .tokenType("Bearer")
+                .tokenType("authorization")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();

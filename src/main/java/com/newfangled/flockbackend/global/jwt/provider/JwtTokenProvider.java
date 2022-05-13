@@ -3,14 +3,15 @@ package com.newfangled.flockbackend.global.jwt.provider;
 import io.jsonwebtoken.*;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.servlet.http.HttpServletRequest;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
-import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class JwtTokenProvider {
@@ -22,23 +23,22 @@ public class JwtTokenProvider {
     @Value("${jwt.token.secret-key:secret-key}")
     private String secretKey;
 
-    public String createAccessToken(String payload) {
-        return createToken(payload, accessTokenValidityInMilliseconds);
+    public String createToken(long accountId, boolean isAccessToken) {
+        return createToken(accountId,
+                (isAccessToken ? accessTokenValidityInMilliseconds
+                        : refreshTokenValidityInMilliseconds)
+        );
     }
 
-    public String createRefreshToken() {
-        byte[] array = new byte[7];
-        new Random().nextBytes(array);
-        String generatedString = new String(array, StandardCharsets.UTF_8);
-        return createToken(generatedString, refreshTokenValidityInMilliseconds);
-    }
+    public String createToken(long accountId, long expireLength) {
+        Claims claims = Jwts.claims();
+        claims.put("account", accountId);
 
-    public String createToken(String payload, long expireLength) {
-        Claims claims = Jwts.claims().setSubject(payload);
         Date now = new Date();
         Date validity = new Date(now.getTime() + expireLength);
 
         return Jwts.builder()
+                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(validity)
@@ -50,17 +50,6 @@ public class JwtTokenProvider {
         return request.getHeader("authorization");
     }
 
-
-    public String getPayload(String token) {
-        try {
-            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims().getSubject();
-        } catch (JwtException e) {
-            throw new JwtException("wrong token");
-        }
-    }
-
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
@@ -68,6 +57,33 @@ public class JwtTokenProvider {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    private Claims parseClaims(String token) {
+        try {
+            return Jwts.parser().setSigningKey(secretKey)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
+    }
+
+    public Long getAccountId(String token) {
+        Claims claims = parseClaims(token);
+
+        if (claims.get("account") == null) {
+            throw new JwtException("manipulated token");
+        }
+        return claims.get("account", Long.class);
+    }
+
+    public void insertRefreshToken(RedisTemplate<String, Object> redisTemplate,
+                                   String payload, String refreshToken) {
+        ValueOperations<String, Object> operations = redisTemplate.opsForValue();
+        operations.set(payload, refreshToken);
+        redisTemplate.expire(payload, refreshTokenValidityInMilliseconds,
+                TimeUnit.MILLISECONDS);
     }
 
     @Getter
