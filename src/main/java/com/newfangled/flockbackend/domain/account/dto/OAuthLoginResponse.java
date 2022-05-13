@@ -28,6 +28,4 @@ public class OAuthLoginResponse {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
-
-
 }

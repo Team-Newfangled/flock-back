@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.persistence.*;
 
@@ -27,6 +29,13 @@ public class Account {
     public Account update(String oauthId, String email, String imageUrl) {
         this.oAuth.update(oauthId, email, imageUrl);
         return this;
+    }
+    
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public static class NotExisted extends RuntimeException {
+        public NotExisted(Long id) {
+            super(String.format("'%d' is invalid account id", id));
+        }
     }
 
 }

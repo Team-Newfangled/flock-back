@@ -13,4 +13,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     @Query("select a from Account a where a.oAuth.oauthId = ?1")
     Optional<Account> findByOAuth_OauthId(String OAuth_oauthId);
 
+
+
 }
