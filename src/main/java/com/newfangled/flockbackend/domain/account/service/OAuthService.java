@@ -10,7 +10,10 @@ import com.newfangled.flockbackend.domain.account.type.OAuthProvider;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import com.newfangled.flockbackend.global.type.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,7 +22,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -28,9 +33,13 @@ public class OAuthService {
     private final InMemoryProviderRepository inMemoryProviderRepository;
     private final AccountRepository accountRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    @Value("${jwt.refresh-token.expire-length:10000}")
+    private long refreshTokenValidityInMilliseconds;
 
     public OAuthLoginResponse login(String providerName, String code) {
-        // 프론트에서 넘어온 provider 이름을 통해 InMemoryProviderRepository에서 OauthProvider 가져오기
+        // 프론트에서 넘어온 provider 이름을 통해 InMemoryProviderRepository 에서 OauthProvider 가져오기
         OAuthProvider provider = inMemoryProviderRepository.findByProviderName(providerName);
 
         // access token 가져오기
@@ -45,8 +54,11 @@ public class OAuthService {
         String accessToken = jwtTokenProvider.createAccessToken(String.valueOf(account.getId()));
         String refreshToken = jwtTokenProvider.createRefreshToken();
 
-        // TODO 레디스에 refresh token 추가
-        // redisUtil.setData(String.valueOf(member.getId()), refreshToken);
+        // Redis 에 데이터 삽입
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        operations.set(String.valueOf(account.getId()), refreshToken);
+        redisTemplate.expire(String.valueOf(account.getId()), refreshTokenValidityInMilliseconds,
+                TimeUnit.MILLISECONDS);
 
         return OAuthLoginResponse.builder()
                 .id(account.getId())
@@ -97,7 +109,7 @@ public class OAuthService {
         return OAuthAttributes.extract(providerName, userAttributes);
     }
 
-    // OAuth 서버에서 유저 정보 map으로 가져오기
+    // OAuth 서버에서 유저 정보 map 으로 가져오기
     private Map<String, Object> getUserAttributes(OAuthProvider provider, OAuthTokenResponse tokenResponse) {
         return WebClient.create()
                 .get()
