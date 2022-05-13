@@ -1,9 +1,13 @@
 package com.newfangled.flockbackend.global.jwt.provider;
 
 import io.jsonwebtoken.*;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+import javax.servlet.http.HttpServletRequest;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Random;
@@ -42,13 +46,18 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader("authorization");
+    }
+
+
     public String getPayload(String token) {
         try {
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
         } catch (ExpiredJwtException e) {
             return e.getClaims().getSubject();
         } catch (JwtException e) {
-            throw new RuntimeException("유효하지 않은 토큰입니다.");
+            throw new JwtException("wrong token");
         }
     }
 
@@ -58,6 +67,16 @@ public class JwtTokenProvider {
             return !claims.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
             return false;
+        }
+    }
+
+    @Getter
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public static class JwtTokenException extends RuntimeException {
+        private final String message;
+
+        public JwtTokenException(String message) {
+            this.message = message;
         }
     }
 }
