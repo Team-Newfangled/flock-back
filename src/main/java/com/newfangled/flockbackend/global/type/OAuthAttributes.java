@@ -6,6 +6,18 @@ import java.util.Arrays;
 import java.util.Map;
 
 public enum OAuthAttributes {
+    GITHUB("github") {
+        @Override
+        public AccountProfileDto of(Map<String, Object> attributes) {
+            return AccountProfileDto.builder()
+                    .oAuthId(String.valueOf(attributes.get("id")))
+                    .email((String) attributes.get("email"))
+                    .name((String) attributes.get("name"))
+                    .imageUrl((String) attributes.get("avatar_url"))
+                    .build();
+        }
+    },
+
     GOOGLE("google") {
         @Override
         public AccountProfileDto of(Map<String, Object> attributes) {
