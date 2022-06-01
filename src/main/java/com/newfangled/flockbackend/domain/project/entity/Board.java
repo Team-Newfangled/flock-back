@@ -1,4 +1,4 @@
-package com.newfangled.flockbackend.domain.sns.entity;
+package com.newfangled.flockbackend.domain.project.entity;
 
 import com.newfangled.flockbackend.domain.account.entity.Account;
 import lombok.AllArgsConstructor;
@@ -7,26 +7,27 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
 @Builder
 @Entity
-public class Comment {
+public class Board {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "board_id")
-    private Board board;
+    private Project project;
 
     @OneToOne
-    @JoinColumn(name = "account_id")
     private Account account;
 
-    @NotNull
     private String content;
+
+    @OneToMany
+    @JoinColumn(name = "board_id")
+    private Set<BoardFile> boardFileSet;
 
 }

@@ -1,5 +1,6 @@
-package com.newfangled.flockbackend.domain.team.entity;
+package com.newfangled.flockbackend.domain.sns.entity;
 
+import com.newfangled.flockbackend.domain.team.entity.Team;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,11 +13,22 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor @NoArgsConstructor
 @Builder
 @Entity
-public class Team {
+public class SNSBoard {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "team_id")
+    private Team team;
+
     @NotNull
-    private String name;
+    @Column(columnDefinition = "TEXT")
+    private String content;
+
+    private String image;
+
+    private String url;
+
+
 }
