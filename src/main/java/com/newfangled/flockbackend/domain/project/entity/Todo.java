@@ -37,6 +37,12 @@ public class Todo {
     @NotNull
     private LocalDate endDate;
 
-    // TODO 시작 날짜와 끝나는 날짜 setter 로 지정하는 메소드 추가해야함
+    public void updateStartDate(LocalDate date) {
+        this.startDate = date;
+    }
+
+    public void updateEndDate(LocalDate date) {
+        this.endDate = date;
+    }
 
 }
