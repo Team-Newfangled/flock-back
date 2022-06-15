@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
-public class DeadLineListDto {
+public class DeadlineListDto {
 
-    private List<TodoResponseDto> todo;
+    private List<TodoDto> todo;
 }

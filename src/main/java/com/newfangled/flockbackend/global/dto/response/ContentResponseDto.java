@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
-public class ResponseContentDto {
+public class ContentResponseDto {
 
     private long id;
     private String content;

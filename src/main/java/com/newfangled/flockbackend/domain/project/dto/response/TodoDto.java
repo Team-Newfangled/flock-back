@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
-public class TodoResponseDto {
+public class TodoDto {
 
     private long id;
     private String content;
