@@ -1,4 +1,4 @@
-package com.newfangled.flockbackend.global.dto;
+package com.newfangled.flockbackend.global.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
