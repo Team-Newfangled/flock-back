@@ -1,18 +1,17 @@
-package com.newfangled.flockbackend.domain.project.embed;
+package com.newfangled.flockbackend.global.embed;
 
 import com.newfangled.flockbackend.domain.team.entity.Team;
-import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import lombok.Getter;
 
 import javax.persistence.Embeddable;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 
 @Getter
 @Embeddable
 public class TeamId implements Serializable {
 
-    @ManyToOne
+    @OneToOne
     private Team team;
 
 }
