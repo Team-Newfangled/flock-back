@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
@@ -21,9 +22,11 @@ public class Account {
     private Long id;
 
     @Embedded
+    @NotNull
     private OAuth oAuth;
 
     @Enumerated(EnumType.STRING)
+    @NotNull
     private Role role;
 
     public Account update(String oauthId, String email, String imageUrl) {

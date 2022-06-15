@@ -15,6 +15,7 @@ import javax.validation.constraints.NotNull;
 @Embeddable
 public class OAuth {
 
+    @NotNull
     private String oauthId;
 
     @NotNull
