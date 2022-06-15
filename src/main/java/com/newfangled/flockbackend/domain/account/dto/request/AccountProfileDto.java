@@ -1,4 +1,4 @@
-package com.newfangled.flockbackend.domain.account.dto;
+package com.newfangled.flockbackend.domain.account.dto.request;
 
 import com.newfangled.flockbackend.domain.account.embed.OAuth;
 import com.newfangled.flockbackend.domain.account.entity.Account;

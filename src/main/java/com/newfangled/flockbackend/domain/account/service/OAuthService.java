@@ -1,20 +1,18 @@
 package com.newfangled.flockbackend.domain.account.service;
 
-import com.newfangled.flockbackend.domain.account.dto.AccountProfileDto;
-import com.newfangled.flockbackend.domain.account.dto.OAuthLoginResponse;
-import com.newfangled.flockbackend.domain.account.dto.OAuthTokenResponse;
+import com.newfangled.flockbackend.domain.account.dto.request.AccountProfileDto;
+import com.newfangled.flockbackend.domain.account.dto.response.OAuthLoginResponse;
+import com.newfangled.flockbackend.domain.account.dto.response.OAuthTokenResponse;
 import com.newfangled.flockbackend.domain.account.entity.Account;
 import com.newfangled.flockbackend.domain.account.repository.AccountRepository;
 import com.newfangled.flockbackend.domain.account.repository.InMemoryProviderRepository;
 import com.newfangled.flockbackend.domain.account.type.OAuthProvider;
-import com.newfangled.flockbackend.global.jwt.dto.RefreshToken;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import com.newfangled.flockbackend.global.type.OAuthAttributes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -24,7 +22,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service

@@ -1,6 +1,6 @@
 package com.newfangled.flockbackend.domain.account.controller;
 
-import com.newfangled.flockbackend.domain.account.dto.OAuthLoginResponse;
+import com.newfangled.flockbackend.domain.account.dto.response.OAuthLoginResponse;
 import com.newfangled.flockbackend.domain.account.service.OAuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
