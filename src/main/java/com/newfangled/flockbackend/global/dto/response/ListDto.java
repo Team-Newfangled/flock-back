@@ -1,4 +1,4 @@
-package com.newfangled.flockbackend.domain.team.dto.response;
+package com.newfangled.flockbackend.global.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -9,13 +9,13 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
-public class ProjectListDto {
+public class ListDto<T> {
 
     private int page;
 
-    @JsonProperty("page_count")
+    @JsonProperty("page-count")
     private int pageCount;
-
-    private List<ProjectDto> results;
+    
+    private List<T> results;
 
 }
