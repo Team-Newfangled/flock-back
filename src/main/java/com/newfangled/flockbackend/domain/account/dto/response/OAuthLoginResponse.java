@@ -1,4 +1,4 @@
-package com.newfangled.flockbackend.domain.account.dto;
+package com.newfangled.flockbackend.domain.account.dto.response;
 
 import com.newfangled.flockbackend.domain.account.type.Role;
 import lombok.Builder;
