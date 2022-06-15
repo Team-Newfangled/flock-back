@@ -1,6 +1,6 @@
 package com.newfangled.flockbackend.domain.account.dto.response;
 
-import com.newfangled.flockbackend.domain.account.dto.CompanyDto;
+import com.newfangled.flockbackend.global.dto.NameDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor @NoArgsConstructor
 public class CompanyListDto {
 
-    private List<CompanyDto> result;
+    private List<NameDto> result;
 
 }
