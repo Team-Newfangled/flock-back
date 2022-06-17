@@ -1,7 +1,7 @@
 package com.newfangled.flockbackend.domain.account.entity;
 
 import com.newfangled.flockbackend.domain.account.embed.OAuth;
-import com.newfangled.flockbackend.domain.account.type.Role;
+import com.newfangled.flockbackend.domain.account.type.UserRole;
 import com.newfangled.flockbackend.global.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,12 +33,7 @@ public class Account implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private Role role;
-
-    public Account update(String oauthId, String email, String imageUrl) {
-        this.oAuth.update(oauthId, email, imageUrl);
-        return this;
-    }
+    private UserRole role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -80,6 +75,12 @@ public class Account implements UserDetails {
     public static class UnauthorizedException extends BusinessException {
         public UnauthorizedException() {
             super(HttpStatus.UNAUTHORIZED, "인증 실패");
+        }
+    }
+
+    public static class FailedToAuthException extends BusinessException {
+        public FailedToAuthException() {
+            super(HttpStatus.UNAUTHORIZED, "OAuth 인증 실패");
         }
     }
 }
