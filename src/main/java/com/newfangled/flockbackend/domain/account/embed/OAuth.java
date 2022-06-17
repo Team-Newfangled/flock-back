@@ -19,19 +19,6 @@ public class OAuth {
     private String oauthId;
 
     @NotNull
-    private String email;
-
-    @NotNull
     private String name;
-
-    @NotNull
-    @Column(name = "profile_img")
-    private String profileImage;
-
-    public void update(String oauthId, String email, String imageUrl) {
-        this.oauthId = oauthId;
-        this.email = email;
-        this.profileImage = imageUrl;
-    }
 
 }
