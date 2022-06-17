@@ -1,98 +1,84 @@
 package com.newfangled.flockbackend.global.jwt.provider;
 
+import com.newfangled.flockbackend.domain.account.service.AuthDetailsService;
+import com.newfangled.flockbackend.global.config.jwt.JwtConfiguration;
+import com.newfangled.flockbackend.global.exception.BusinessException;
 import io.jsonwebtoken.*;
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 @Component
+@RequiredArgsConstructor
 public class JwtTokenProvider {
+    private static final String ACCESS = "ACCESS";
+    private static final String REFRESH = "REFRESH";
 
-    @Value("${jwt.access-token.expire-length:10000}")
-    private long accessTokenValidityInMilliseconds;
-    @Value("${jwt.refresh-token.expire-length:10000}")
-    private long refreshTokenValidityInMilliseconds;
-    @Value("${jwt.token.secret-key:secret-key}")
-    private String secretKey;
+    private final JwtConfiguration jwtConfiguration;
+    private final AuthDetailsService authDetailsService;
 
-    public String createToken(long accountId, boolean isAccessToken) {
-        return createToken(accountId,
-                (isAccessToken ? accessTokenValidityInMilliseconds
-                        : refreshTokenValidityInMilliseconds)
-        );
+    public String generateAccessToken(String loginId) {
+        return generateToken(ACCESS, loginId, jwtConfiguration.getAccessToken());
     }
 
-    public String createToken(long accountId, long expireLength) {
-        Claims claims = Jwts.claims();
-        claims.put("account", accountId);
+    public String generateRefreshToken(String loginId) {
+        return generateToken(REFRESH, loginId, jwtConfiguration.getRefreshToken());
+    }
 
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + expireLength);
+    private Claims parseToken(String token) {
+        return Jwts.parser().setSigningKey(jwtConfiguration.getSecretKey())
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public String extractLoginIdFromToken(String token) {
+        try {
+            return parseToken(token).getSubject();
+        } catch (SignatureException | MalformedJwtException e) {
+            throw new TokenException("잘못된 Jwt 서명입니다.");
+        } catch (ExpiredJwtException e) {
+            throw new TokenException("만료된 토큰입니다.");
+        } catch (IllegalArgumentException | UnsupportedJwtException e) {
+            throw new TokenException("비정상적인 토큰입니다.");
+        }
+    }
+
+    private String generateToken(String type, String loginId, long expWithSecond) {
+        final Date tokenCreationDate = new Date();
 
         return Jwts.builder()
-                .setHeaderParam(Header.TYPE, Header.JWT_TYPE)
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secretKey)
+                .signWith(SignatureAlgorithm.HS256, jwtConfiguration.getSecretKey())
+                .setSubject(loginId)
+                .claim("type", type)
+                .setIssuedAt(tokenCreationDate)
+                .setExpiration(new Date(tokenCreationDate.getTime() + expWithSecond * 1000))
                 .compact();
     }
 
-    public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("authorization");
-    }
-
-    public boolean validateToken(String token) {
-        try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-            return !claims.getBody().getExpiration().before(new Date());
-        } catch (JwtException | IllegalArgumentException e) {
-            return false;
+    public String getTokenFromHeader(String header) {
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.replace("Bearer ", "");
         }
+        return null;
     }
 
-    private Claims parseClaims(String token) {
-        try {
-            return Jwts.parser().setSigningKey(secretKey)
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
-        }
+    public Authentication getAuthenticationFromToken(String token) {
+        UserDetails userDetails = authDetailsService.loadUserByUsername(
+                extractLoginIdFromToken(token)
+        );
+        return new UsernamePasswordAuthenticationToken(
+                userDetails, "", userDetails.getAuthorities()
+        );
     }
 
-    public Long getAccountId(String token) {
-        Claims claims = parseClaims(token);
-
-        if (claims.get("account") == null) {
-            throw new JwtException("manipulated token");
-        }
-        return claims.get("account", Long.class);
-    }
-
-    public void insertRefreshToken(RedisTemplate<String, Object> redisTemplate,
-                                   String payload, String refreshToken) {
-        ValueOperations<String, Object> operations = redisTemplate.opsForValue();
-        operations.set(payload, refreshToken);
-        redisTemplate.expire(payload, refreshTokenValidityInMilliseconds,
-                TimeUnit.MILLISECONDS);
-    }
-
-    @Getter
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public static class JwtTokenException extends RuntimeException {
-        private final String message;
-
-        public JwtTokenException(String message) {
-            this.message = message;
+    public static class TokenException extends BusinessException {
+        public TokenException(String message) {
+            super(HttpStatus.UNAUTHORIZED, message);
         }
     }
 }
