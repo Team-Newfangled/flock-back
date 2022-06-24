@@ -101,6 +101,7 @@ public class AuthService {
         OAuth oAuth = OAuth.builder()
                 .name(userInfoResponse.getGivenName())
                 .oauthId(userInfoResponse.getOpenId())
+                .pictureUrl(userInfoResponse.getProfileImageUrl())
                 .build();
         Account account = Account.builder()
                 .role(UserRole.MEMBER)

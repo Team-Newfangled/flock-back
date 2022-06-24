@@ -21,4 +21,15 @@ public class OAuth {
     @NotNull
     private String name;
 
+    @NotNull
+    private String pictureUrl;
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updatePicture(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
+
 }

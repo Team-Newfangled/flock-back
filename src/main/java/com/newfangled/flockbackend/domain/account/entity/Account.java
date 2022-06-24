@@ -35,6 +35,12 @@ public class Account implements UserDetails {
     @NotNull
     private UserRole role;
 
+    private String company;
+
+    public void setCompany(String company) {
+        this.company = company;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<>();
@@ -83,4 +89,11 @@ public class Account implements UserDetails {
             super(HttpStatus.UNAUTHORIZED, "OAuth 인증 실패");
         }
     }
+
+    public static class NotExistsException extends BusinessException {
+        public NotExistsException() {
+            super(HttpStatus.NOT_FOUND, "회원 찾지 못함");
+        }
+    }
+
 }
