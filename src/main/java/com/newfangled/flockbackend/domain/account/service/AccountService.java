@@ -27,7 +27,8 @@ public class AccountService {
         return new AccountResponseDto(findById(accountId));
     }
 
-    public LinkListDto updateNickname(Account account, AccountDto accountDto) {
+    public LinkListDto updateNickname(long accountId, AccountDto accountDto) {
+        Account account = findById(accountId);
         account.getOAuth().updateName(accountDto.getNickname());
         LinkDto linkDto = new LinkDto(
                 "self",
@@ -58,7 +59,7 @@ public class AccountService {
         return null;
     }
 
-    @Transactional(readOnly = true, isolation = Isolation.READ_COMMITTED)
+    @Transactional(readOnly = true)
     protected Account findById(long accountId) {
         return accountRepository.findById(accountId)
                 .orElseThrow(Account.NotExistsException::new);

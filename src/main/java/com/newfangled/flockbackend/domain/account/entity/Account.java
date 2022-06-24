@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
+@DynamicUpdate
 @Builder
 @Entity
 public class Account implements UserDetails {
