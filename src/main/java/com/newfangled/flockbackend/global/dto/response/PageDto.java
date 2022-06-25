@@ -9,7 +9,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
-public class ListDto<T> {
+public class PageDto<T> {
 
     private int page;
 

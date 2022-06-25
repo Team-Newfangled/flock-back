@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor @NoArgsConstructor
 @Builder
 public class AccountProfileDto {
-
     private String oAuthId;
     private String email;
     private String imageUrl;

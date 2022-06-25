@@ -12,6 +12,9 @@ public class CommentDto {
     private long id;
     private String comment;
 
+    @JsonProperty("comment-id")
+    private long commentId;
+
     @JsonProperty("writer-id")
     private long writerId;
 
