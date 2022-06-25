@@ -1,17 +1,15 @@
 package com.newfangled.flockbackend.domain.account.service;
 
-import com.newfangled.flockbackend.domain.account.dto.request.AccountDto;
 import com.newfangled.flockbackend.domain.account.dto.request.PictureDto;
-import com.newfangled.flockbackend.domain.account.dto.response.AccountResponseDto;
+import com.newfangled.flockbackend.domain.account.dto.response.ProfileDto;
 import com.newfangled.flockbackend.domain.account.entity.Account;
 import com.newfangled.flockbackend.domain.account.repository.AccountRepository;
 import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -23,13 +21,13 @@ public class AccountService {
 
     private final AccountRepository accountRepository;
 
-    public AccountResponseDto findAccountById(long accountId) {
-        return new AccountResponseDto(findById(accountId));
+    public ProfileDto findAccountById(long accountId) {
+        return new ProfileDto(findById(accountId));
     }
 
-    public LinkListDto updateNickname(long accountId, AccountDto accountDto) {
+    public LinkListDto updateNickname(long accountId, NameDto nameDto) {
         Account account = findById(accountId);
-        account.getOAuth().updateName(accountDto.getNickname());
+        account.getOAuth().updateName(nameDto.getName());
         LinkDto linkDto = new LinkDto(
                 "self",
                 "GET",
@@ -38,8 +36,8 @@ public class AccountService {
         return new LinkListDto("닉네임을 변경하였습니다", List.of(linkDto));
     }
 
-    public LinkListDto updatePicture(Account account, PictureDto pictureDto) {
-        account.getOAuth().updatePicture(pictureDto.getPicture());
+    public LinkListDto updatePicture(Account account, ContentDto contentDto) {
+        account.getOAuth().updatePicture(contentDto.getContent());
         LinkDto linkDto = new LinkDto(
                 "self",
                 "GET",
