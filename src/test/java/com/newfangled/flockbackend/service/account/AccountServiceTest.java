@@ -1,5 +1,6 @@
 package com.newfangled.flockbackend.service.account;
 
+import com.newfangled.flockbackend.domain.account.dto.response.ProfileDto;
 import com.newfangled.flockbackend.domain.account.embed.OAuth;
 import com.newfangled.flockbackend.domain.account.entity.Account;
 import com.newfangled.flockbackend.domain.account.repository.AccountRepository;
@@ -92,6 +93,32 @@ class AccountServiceTest {
         // verify
         verify(accountRepository, times(1))
                 .findById(anyLong());
+        // finally
+        printTime(stopWatch.getTotalTimeMillis());
+    }
+
+    @DisplayName("프로필 조회")
+    @Test
+    void getUserPicture() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
+        lenient().when(accountRepository.findById(anyLong()))
+                        .thenReturn(Optional.of(account));
+
+        // when
+        stopWatch.start();
+        ProfileDto profileDto = accountService.findAccountById(account.getId());
+        stopWatch.stop();
+
+        // then
+        assertThat(profileDto).isNotNull();
+        assertThat(profileDto.getCompany()).isEqualTo(account.getCompany());
+        assertThat(profileDto.getImage()).isEqualTo(oAuth.getPictureUrl());
+        assertThat(profileDto.getNickname()).isEqualTo(oAuth.getName());
+
+        // finally
         printTime(stopWatch.getTotalTimeMillis());
     }
 }

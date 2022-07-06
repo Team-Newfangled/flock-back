@@ -14,6 +14,7 @@ public class ProfileDto {
 
     public ProfileDto(Account account) {
         this.nickname = account.getOAuth().getName();
+        this.company = account.getCompany();
         this.image = account.getOAuth().getPictureUrl();
     }
 }
