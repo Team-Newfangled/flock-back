@@ -152,5 +152,26 @@ class AccountServiceTest {
         printTime(stopWatch.getTotalTimeMillis());
     }
 
+    @DisplayName("사용자 회사 조회")
+    @Test
+    void getCompanyName() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
+        lenient().when(accountRepository.findById(anyLong()))
+                .thenReturn(Optional.of(account));
 
+        // when
+        stopWatch.start();
+        NameDto nameDto = accountService.findCompany(account.getId());
+        stopWatch.stop();
+
+        // then
+        assertThat(nameDto).isNotNull();
+        assertThat(nameDto.getName()).isEqualTo(account.getCompany());
+
+        // finally
+        printTime(stopWatch.getTotalTimeMillis());
+    }
 }
