@@ -6,9 +6,15 @@ import com.newfangled.flockbackend.domain.account.entity.Account;
 import com.newfangled.flockbackend.domain.account.repository.AccountRepository;
 import com.newfangled.flockbackend.domain.account.service.AccountService;
 import com.newfangled.flockbackend.domain.account.type.UserRole;
+import com.newfangled.flockbackend.domain.team.entity.Team;
+import com.newfangled.flockbackend.domain.team.entity.TeamMember;
+import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
+import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.dto.NameDto;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
+import com.newfangled.flockbackend.global.dto.response.ResultListDto;
+import com.newfangled.flockbackend.global.embed.TeamId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
@@ -19,6 +25,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.util.StopWatch;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -32,6 +40,9 @@ class AccountServiceTest {
 
     @Mock
     private AccountRepository accountRepository;
+
+    @Mock
+    private TeamMemberRepository teamMemberRepository;
 
     @InjectMocks
     private AccountService accountService;
@@ -50,6 +61,13 @@ class AccountServiceTest {
                 .oAuth(oAuth)
                 .company("공돌이네")
                 .role(UserRole.MEMBER)
+                .build();
+    }
+
+    private Team team(long id, String name) {
+        return Team.builder()
+                .id(id)
+                .name(name)
                 .build();
     }
 
@@ -94,6 +112,7 @@ class AccountServiceTest {
         // verify
         verify(accountRepository, times(1))
                 .findById(anyLong());
+
         // finally
         printTime(stopWatch.getTotalTimeMillis());
     }
@@ -148,6 +167,7 @@ class AccountServiceTest {
         // verify
         verify(accountRepository, times(1))
                 .findById(anyLong());
+
         // finally
         printTime(stopWatch.getTotalTimeMillis());
     }
@@ -200,6 +220,39 @@ class AccountServiceTest {
         // verify
         verify(accountRepository, times(1))
                 .findById(anyLong());
+
+        // finally
+        printTime(stopWatch.getTotalTimeMillis());
+    }
+    
+    @DisplayName("사용자 팀 전체 조회")
+    @Test
+    void findAllTeams() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
+        List<TeamMember> teamMemberList = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            teamMemberList.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader));
+        }
+        lenient().when(teamMemberRepository.findDistinctByAccount_Id(anyLong()))
+                .thenReturn(teamMemberList);
+
+        // when
+        stopWatch.start();
+        ResultListDto<NameDto> companies = accountService.findAllTeams(1L);
+        stopWatch.stop();
+
+        // then
+        assertThat(companies).isNotNull();
+        assertThat(companies.getResults()).isNotEmpty();
+        assertThat(companies.getResults().size()).isEqualTo(8);
+
+        // verify
+        verify(teamMemberRepository, times(1))
+                .findDistinctByAccount_Id(anyLong());
+
         // finally
         printTime(stopWatch.getTotalTimeMillis());
     }

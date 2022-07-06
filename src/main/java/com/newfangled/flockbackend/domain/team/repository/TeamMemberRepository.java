@@ -14,4 +14,7 @@ public interface TeamMemberRepository extends CrudRepository<TeamMember, Long> {
     @Query("select t from TeamMember t where t.account.id = ?1")
     Optional<TeamMember> findByAccount_Id(Long account_id);
 
+    @Query("select distinct t from TeamMember t where t.account.id = ?1")
+    List<TeamMember> findDistinctByAccount_Id(Long account_id);
+
 }
