@@ -1,6 +1,5 @@
 package com.newfangled.flockbackend.domain.account.service;
 
-import com.newfangled.flockbackend.domain.account.dto.request.PictureDto;
 import com.newfangled.flockbackend.domain.account.dto.response.ProfileDto;
 import com.newfangled.flockbackend.domain.account.entity.Account;
 import com.newfangled.flockbackend.domain.account.repository.AccountRepository;
@@ -36,7 +35,8 @@ public class AccountService {
         return new LinkListDto("닉네임을 변경하였습니다", List.of(linkDto));
     }
 
-    public LinkListDto updatePicture(Account account, ContentDto contentDto) {
+    public LinkListDto updatePicture(long accountId, ContentDto contentDto) {
+        Account account = findById(accountId);
         account.getOAuth().updatePicture(contentDto.getContent());
         LinkDto linkDto = new LinkDto(
                 "self",

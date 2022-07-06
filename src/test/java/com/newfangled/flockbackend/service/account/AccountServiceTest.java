@@ -7,6 +7,7 @@ import com.newfangled.flockbackend.domain.account.repository.AccountRepository;
 import com.newfangled.flockbackend.domain.account.service.AccountService;
 import com.newfangled.flockbackend.domain.account.type.UserRole;
 import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
@@ -121,4 +122,35 @@ class AccountServiceTest {
         // finally
         printTime(stopWatch.getTotalTimeMillis());
     }
+
+    @DisplayName("")
+    @Test
+    void changePicture() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
+        lenient().when(accountRepository.findById(anyLong()))
+                .thenReturn(Optional.of(account));
+        ContentDto contentDto = new ContentDto(randomString());
+
+        // when
+        stopWatch.start();
+        LinkListDto linkListDto = accountService
+                .updatePicture(1L, contentDto);
+        stopWatch.stop();
+
+        // then
+        assertThat(linkListDto.getMessage()).isEqualTo("사진을 변경하였습니다");
+        assertThat(linkListDto.getLinks().size()).isEqualTo(1);
+        assertThat(account.getOAuth().getPictureUrl()).isEqualTo(contentDto.getContent());
+
+        // verify
+        verify(accountRepository, times(1))
+                .findById(anyLong());
+        // finally
+        printTime(stopWatch.getTotalTimeMillis());
+    }
+
+
 }
