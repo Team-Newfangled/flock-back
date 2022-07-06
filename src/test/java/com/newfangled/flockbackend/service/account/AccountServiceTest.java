@@ -123,7 +123,7 @@ class AccountServiceTest {
         printTime(stopWatch.getTotalTimeMillis());
     }
 
-    @DisplayName("")
+    @DisplayName("사용자 사진 변경")
     @Test
     void changePicture() {
         StopWatch stopWatch = new StopWatch();
@@ -171,6 +171,35 @@ class AccountServiceTest {
         assertThat(nameDto).isNotNull();
         assertThat(nameDto.getName()).isEqualTo(account.getCompany());
 
+        // finally
+        printTime(stopWatch.getTotalTimeMillis());
+    }
+
+    @DisplayName("사용자 회사명 변경")
+    @Test
+    void changeCompany() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
+        lenient().when(accountRepository.findById(anyLong()))
+                .thenReturn(Optional.of(account));
+        NameDto nameDto = new NameDto(randomString());
+
+        // when
+        stopWatch.start();
+        LinkListDto linkListDto = accountService
+                .updateCompany(1L, nameDto);
+        stopWatch.stop();
+
+        // then
+        assertThat(linkListDto.getMessage()).isEqualTo("회사명을 수정하였습니다.");
+        assertThat(linkListDto.getLinks().size()).isEqualTo(1);
+        assertThat(account.getCompany()).isEqualTo(nameDto.getName());
+
+        // verify
+        verify(accountRepository, times(1))
+                .findById(anyLong());
         // finally
         printTime(stopWatch.getTotalTimeMillis());
     }

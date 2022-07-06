@@ -39,7 +39,7 @@ public class Account implements UserDetails {
 
     private String company;
 
-    public void setCompany(String company) {
+    public void updateCompany(String company) {
         this.company = company;
     }
 

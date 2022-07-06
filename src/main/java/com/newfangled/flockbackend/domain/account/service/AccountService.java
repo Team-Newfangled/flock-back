@@ -53,8 +53,15 @@ public class AccountService {
         return new NameDto(account.getCompany());
     }
 
-    public LinkListDto updateCompany(Account account, NameDto nameDto) {
-        return null;
+    public LinkListDto updateCompany(long accountId, NameDto nameDto) {
+        Account account = findById(accountId);
+        account.updateCompany(nameDto.getName());
+        LinkDto linkDto = new LinkDto(
+                "self",
+                "GET",
+                String.format("/users/%d", account.getId())
+        );
+        return new LinkListDto("회사명을 수정하였습니다.", List.of(linkDto));
     }
 
     @Transactional(readOnly = true)
