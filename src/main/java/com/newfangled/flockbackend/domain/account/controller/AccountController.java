@@ -7,6 +7,7 @@ import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.dto.response.ResultListDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -24,12 +25,14 @@ public class AccountController {
     }
 
     @PatchMapping("/name")
+    @ResponseStatus(HttpStatus.CREATED)
     public LinkListDto changeName(@PathVariable("user-id") long accountId,
                                   @RequestBody @Valid NameDto nameDto) {
         return accountService.updateNickname(accountId, nameDto);
     }
 
     @PatchMapping("/picture")
+    @ResponseStatus(HttpStatus.CREATED)
     public LinkListDto changePicture(@PathVariable("user-id") long accountId,
                                      @RequestBody @Valid ContentDto contentDto) {
         return accountService.updatePicture(accountId, contentDto);
@@ -41,6 +44,7 @@ public class AccountController {
     }
 
     @PatchMapping("/organization")
+    @ResponseStatus(HttpStatus.CREATED)
     public LinkListDto changeOrganization(@PathVariable("user-id") long accountId,
                                           @RequestBody @Valid NameDto nameDto) {
         return accountService.updateCompany(accountId, nameDto);
