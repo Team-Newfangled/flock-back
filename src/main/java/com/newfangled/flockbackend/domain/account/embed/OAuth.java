@@ -8,12 +8,13 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
 @Builder
 @Embeddable
-public class OAuth {
+public class OAuth implements Serializable {
 
     @NotNull
     private String oauthId;
