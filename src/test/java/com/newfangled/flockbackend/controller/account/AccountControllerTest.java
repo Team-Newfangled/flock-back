@@ -154,6 +154,31 @@ class AccountControllerTest {
                 .andExpect(status().isCreated());
     }
     
+    @DisplayName("사용자 닉네임 변경 실패")
+    @Test
+    void changeNicknameFailed() throws Exception {
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
+        NameDto nameDto = new NameDto(randomString());
+        LinkListDto linkListDto = linkListDto("닉네임");
+        String content = objectMapper.writeValueAsString(nameDto);
+
+        stumpAccount(account);
+        lenient().when(accountService.updateNickname(anyLong(), any(NameDto.class)))
+                .thenThrow(new Account.UnauthorizedException());
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/users/1/name",
+                content, "patch", null
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isForbidden());
+    }
 
 
 

@@ -32,7 +32,7 @@ public class ControllerTestUtil {
                 method(method, uri)
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", token)
+                        .header("Authorization", (token == null) ? "" : token)
                         .accept(MediaType.APPLICATION_JSON)
         );
     }
