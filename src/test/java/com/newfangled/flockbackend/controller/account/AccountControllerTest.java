@@ -2,6 +2,7 @@ package com.newfangled.flockbackend.controller.account;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newfangled.flockbackend.domain.account.controller.AccountController;
+import com.newfangled.flockbackend.domain.account.dto.response.ProfileDto;
 import com.newfangled.flockbackend.domain.account.embed.OAuth;
 import com.newfangled.flockbackend.domain.account.entity.Account;
 import com.newfangled.flockbackend.domain.account.repository.AccountRepository;
@@ -18,7 +19,6 @@ import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -161,7 +161,6 @@ class AccountControllerTest {
         OAuth oAuth = oAuth();
         Account account = account(oAuth);
         NameDto nameDto = new NameDto(randomString());
-        LinkListDto linkListDto = linkListDto("닉네임");
         String content = objectMapper.writeValueAsString(nameDto);
 
         stumpAccount(account);
@@ -180,6 +179,30 @@ class AccountControllerTest {
                 .andExpect(status().isForbidden());
     }
 
+    @DisplayName("사용자 프로필 조회 성공")
+    @Test
+    void findUserPictureSuccess() throws Exception {
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
+        ProfileDto profileDto = new ProfileDto(account);
+
+        stumpAccount(account);
+        lenient().when(accountService.findAccountById(anyLong()))
+                .thenReturn(profileDto);
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/users/1",
+                "", "GET", token()
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.nickname", oAuth.getName()).exists())
+                .andExpect(jsonPath("$.image", oAuth.getPictureUrl()).exists());
+    }
 
 
 
