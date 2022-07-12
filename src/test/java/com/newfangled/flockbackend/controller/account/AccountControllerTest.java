@@ -129,6 +129,10 @@ class AccountControllerTest {
         return String.format("Bearer %s", jwtTokenProvider.generateAccessToken("1"));
     }
 
+    private String fakeToken() {
+        return "Bearer NULL";
+    }
+    
     @DisplayName("사용자 닉네임 변경 성공")
     @Test
     void changeNicknameSuccess() throws Exception {
@@ -170,13 +174,13 @@ class AccountControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/users/1/name",
-                content, "patch", null
+                content, "patch", fakeToken()
         );
 
         // then
         resultActions.andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(status().isForbidden());
+                .andExpect(status().isUnauthorized());
     }
 
     @DisplayName("사용자 프로필 조회 성공")
@@ -204,9 +208,27 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$.image", oAuth.getPictureUrl()).exists());
     }
 
+    @DisplayName("사용자 프로필 조회 실패")
+    @Test
+    void findUserPictureFailed() throws Exception {
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
 
+        stumpAccount(account);
+        lenient().when(accountService.findAccountById(anyLong()))
+                .thenThrow(new Account.UnauthorizedException());
 
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/users/1",
+                "", "GET", fakeToken()
+        );
 
-
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isUnauthorized());
+    }
 
 }
