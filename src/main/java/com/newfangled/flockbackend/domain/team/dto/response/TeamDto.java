@@ -3,13 +3,15 @@ package com.newfangled.flockbackend.domain.team.dto.response;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@AllArgsConstructor @NoArgsConstructor
-public class ProjectDto {
+@AllArgsConstructor
+public class TeamDto {
 
-    private long id;
-    private String name;
+    @JsonProperty("team-id")
+    private long teamId;
+
+    @JsonProperty("team-name")
+    private String teamName;
 
 }

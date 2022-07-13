@@ -8,17 +8,29 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
 @Builder
 @Embeddable
-public class OAuth {
+public class OAuth implements Serializable {
 
     @NotNull
     private String oauthId;
 
     @NotNull
     private String name;
+
+    @NotNull
+    private String pictureUrl;
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updatePicture(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
+    }
 
 }

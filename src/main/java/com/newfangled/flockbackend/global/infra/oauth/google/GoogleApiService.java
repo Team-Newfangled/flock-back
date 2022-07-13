@@ -14,7 +14,7 @@ public interface GoogleApiService {
     class GetUserInfoResponse {
         @JsonProperty("id") String openId;
         @JsonProperty("email") String email;
-        @JsonProperty("verified_email") Boolean isVerfiedEmail;
+        @JsonProperty("verified_email") Boolean isVerifiedEmail;
         @JsonProperty("name") String name;
         @JsonProperty("given_name") String givenName;
         @JsonProperty("picture") String profileImageUrl;

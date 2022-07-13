@@ -11,7 +11,7 @@ import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
-public class TodoRequestDto {
+public class TodoModifyDto {
 
     @NotNull
     private String content;

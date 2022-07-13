@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
+@DynamicUpdate
 @Builder
 @Entity
 public class Account implements UserDetails {
@@ -34,6 +36,12 @@ public class Account implements UserDetails {
     @Enumerated(EnumType.STRING)
     @NotNull
     private UserRole role;
+
+    private String company;
+
+    public void updateCompany(String company) {
+        this.company = company;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -83,4 +91,11 @@ public class Account implements UserDetails {
             super(HttpStatus.UNAUTHORIZED, "OAuth 인증 실패");
         }
     }
+
+    public static class NotExistsException extends BusinessException {
+        public NotExistsException() {
+            super(HttpStatus.NOT_FOUND, "회원 찾지 못함");
+        }
+    }
+
 }
