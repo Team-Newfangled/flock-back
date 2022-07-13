@@ -10,12 +10,16 @@ import com.newfangled.flockbackend.domain.account.service.AccountService;
 import com.newfangled.flockbackend.domain.account.service.AuthDetailsService;
 import com.newfangled.flockbackend.domain.account.type.UserRole;
 import com.newfangled.flockbackend.domain.team.entity.Team;
+import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
+import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.config.jwt.JwtConfiguration;
 import com.newfangled.flockbackend.global.dto.NameDto;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
+import com.newfangled.flockbackend.global.dto.response.ResultListDto;
+import com.newfangled.flockbackend.global.embed.TeamId;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,9 +39,11 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -305,4 +311,65 @@ class AccountControllerTest {
                 .andExpect(status().isCreated());
     }
 
+    @DisplayName("사용자 팀 전체 조회 성공")
+    @Test
+    void findAllTeamsSuccess() throws Exception {
+        // given
+        Account account = account(oAuth());
+        List<TeamMember> results = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            results.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader));
+        }
+        List<NameDto> dtoList = results.stream()
+                .map(TeamMember::getAccount)
+                .map(Account::getCompany)
+                .map(NameDto::new)
+                .collect(Collectors.toList());
+        ResultListDto<NameDto> listDto = new ResultListDto<>(dtoList);
+
+        stumpAccount(account);
+        lenient().when(accountService.findAllTeams(anyLong()))
+                .thenReturn(listDto);
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/users/1/team",
+                "", "GET", token()
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("사용자 팀 전체 조회 실패")
+    @Test
+    void finaAllTeamsFailed() throws Exception {
+        // given
+        Account account = account(oAuth());
+        List<TeamMember> results = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            results.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader));
+        }
+        List<NameDto> dtoList = results.stream()
+                .map(TeamMember::getAccount)
+                .map(Account::getCompany)
+                .map(NameDto::new)
+                .collect(Collectors.toList());
+        ResultListDto<NameDto> listDto = new ResultListDto<>(dtoList);
+
+        stumpAccount(account);
+        lenient().when(accountService.findAllTeams(anyLong()))
+                .thenReturn(listDto);
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/users/1/team",
+                "", "GET", fakeToken()
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isUnauthorized());
+    }
 }
