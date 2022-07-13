@@ -13,6 +13,7 @@ import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.global.config.jwt.JwtConfiguration;
 import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
@@ -229,6 +230,79 @@ class AccountControllerTest {
         resultActions.andDo(print())
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().isUnauthorized());
+    }
+    
+    @DisplayName("사용자 사진 변경 성공")
+    @Test
+    void changeUserPictureSuccess() throws Exception {
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
+        ContentDto contentDto = new ContentDto(randomString() + ".png");
+        LinkListDto linkListDto = linkListDto("사진");
+        String content = objectMapper.writeValueAsString(contentDto);
+
+        stumpAccount(account);
+        lenient().when(accountService.updatePicture(anyLong(), any(ContentDto.class)))
+                .thenReturn(linkListDto);
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/users/1/picture",
+                content, "PATCH", token()
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isCreated());
+    }
+
+    @DisplayName("사용자 회사 조회 성공")
+    @Test
+    void findCompanySuccess() throws Exception {
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
+        NameDto nameDto = new NameDto(randomString());
+
+        stumpAccount(account);
+        lenient().when(accountService.findCompany(anyLong()))
+                .thenReturn(nameDto);
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/users/1/organization",
+                "", "get", token()
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isOk());
+    }
+
+    @DisplayName("사용자 회사명 변경 성공")
+    @Test
+    void changeCompanySuccess() throws Exception {
+        // given
+        OAuth oAuth = oAuth();
+        Account account = account(oAuth);
+        NameDto nameDto = new NameDto(randomString());
+        LinkListDto linkListDto = linkListDto("회사명");
+        String content = objectMapper.writeValueAsString(nameDto);
+
+        stumpAccount(account);
+        lenient().when(accountService.updateNickname(anyLong(), any(NameDto.class)))
+                .thenReturn(linkListDto);
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/users/1/organization",
+                content, "patch", token()
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isCreated());
     }
 
 }
