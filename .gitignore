@@ -38,3 +38,5 @@ out/
 
 ### Private Data ###
 application.yml
+src/main/resources/templates/
+src/main/resources/static/
