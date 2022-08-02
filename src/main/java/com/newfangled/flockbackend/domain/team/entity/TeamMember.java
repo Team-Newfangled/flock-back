@@ -1,6 +1,6 @@
 package com.newfangled.flockbackend.domain.team.entity;
 
-import com.newfangled.flockbackend.domain.account.entity.Account;
+import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.embed.TeamId;
 import lombok.AllArgsConstructor;
@@ -21,7 +21,7 @@ public class TeamMember {
     private TeamId teamId;
 
     @OneToOne
-    private Account account;
+    private Member account;
 
     @Enumerated(EnumType.STRING)
     private Role role;

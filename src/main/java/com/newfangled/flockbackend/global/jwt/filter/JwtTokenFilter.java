@@ -1,6 +1,6 @@
 package com.newfangled.flockbackend.global.jwt.filter;
 
-import com.newfangled.flockbackend.domain.account.entity.Account;
+import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.global.exception.BusinessException;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
             filterChain.doFilter(request, response);
-        } catch (JwtTokenProvider.TokenException | Account.UnauthorizedException e) {
+        } catch (JwtTokenProvider.TokenException | Member.UnauthorizedException e) {
             filterExceptionHandle(e, response);
         }
     }

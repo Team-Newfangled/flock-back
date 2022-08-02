@@ -1,6 +1,6 @@
 package com.newfangled.flockbackend.global.type;
 
-import com.newfangled.flockbackend.domain.account.dto.request.AccountProfileDto;
+import com.newfangled.flockbackend.domain.member.dto.request.AccountProfileDto;
 
 import java.util.Arrays;
 import java.util.Map;
