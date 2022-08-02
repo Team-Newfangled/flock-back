@@ -1,6 +1,6 @@
 package com.newfangled.flockbackend.global.jwt.provider;
 
-import com.newfangled.flockbackend.domain.account.service.AuthDetailsService;
+import com.newfangled.flockbackend.domain.member.service.AuthDetailsService;
 import com.newfangled.flockbackend.global.config.jwt.JwtConfiguration;
 import com.newfangled.flockbackend.global.exception.BusinessException;
 import io.jsonwebtoken.*;
