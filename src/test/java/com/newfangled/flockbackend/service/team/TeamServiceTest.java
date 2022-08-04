@@ -58,6 +58,7 @@ public class TeamServiceTest {
 
     private Member teamMaker(OAuth oAuth) {
         return Member.builder()
+                .id(1L)
                 .oAuth(oAuth)
                 .role(UserRole.MEMBER)
                 .company("회사")
@@ -144,6 +145,32 @@ public class TeamServiceTest {
         printTime(stopWatch.getTotalTimeMillis());
     }
 
+    @DisplayName("팀원 조회")
+    @Test
+    void findAllMembers() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        Team team = new Team(1L, "NewFangled");
+        TeamId teamId = new TeamId(team);
+        Member member = teamMaker(oAuth());
+        TeamMember teamMember = new TeamMember(teamId, member, Role.Member);
+        Page<TeamMember> teamMembers = new PageImpl<>(List.of(teamMember));
+
+        lenient().when(teamRepository.findById(anyLong()))
+                .thenReturn(Optional.of(team));
+        lenient().when(teamMemberRepository.findAllByTeamId(any(TeamId.class), any(Pageable.class)))
+                .thenReturn(teamMembers);
+
+        // when
+        stopWatch.start();
+        teamService.findAllMember(1L, 0);
+        stopWatch.stop();
+
+        // verify
+        verify(teamMemberRepository, times(1)).findAllByTeamId(
+                any(TeamId.class), any(Pageable.class));
+        printTime(stopWatch.getTotalTimeMillis());
+    }
 
 
 }

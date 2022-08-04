@@ -3,6 +3,7 @@ package com.newfangled.flockbackend.domain.team.service;
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
+import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class TeamService {
 
@@ -55,8 +57,14 @@ public class TeamService {
         teamMemberRepository.delete(teamMember);
     }
 
-    public PageDto<ProjectDto> findAllMember(long id, int page) {
-        return null;
+    public PageDto<TeamMemberRO> findAllMember(long id, int page) {
+        TeamId teamId = getTeamId(findById(id));
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        Page<TeamMemberRO> teamMembers = new PageImpl<>(
+                teamMemberRepository.findAllByTeamId(teamId, pageable)
+                        .stream().map(TeamMemberRO::new).collect(Collectors.toList())
+        );
+        return new PageDto<>(teamMembers);
     }
 
     public ProjectDto createProject(NameDto nameDto) {
