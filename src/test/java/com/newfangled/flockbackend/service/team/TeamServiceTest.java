@@ -6,6 +6,7 @@ import com.newfangled.flockbackend.domain.member.type.UserRole;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
+import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
@@ -163,13 +164,19 @@ public class TeamServiceTest {
 
         // when
         stopWatch.start();
-        teamService.findAllMember(1L, 0);
+        PageDto<TeamMemberRO> pageDto = teamService.findAllMember(1L, 0);
         stopWatch.stop();
+
+        // then
+        assertThat(pageDto).isNotNull();
+        assertThat(pageDto.getPage()).isEqualTo(0);
+        assertThat(pageDto.getResults()).isNotNull();
+        assertThat(pageDto.getResults().size()).isEqualTo(1);
+        printTime(stopWatch.getTotalTimeMillis());
 
         // verify
         verify(teamMemberRepository, times(1)).findAllByTeamId(
                 any(TeamId.class), any(Pageable.class));
-        printTime(stopWatch.getTotalTimeMillis());
     }
     
     @DisplayName("프로젝트 추가")
