@@ -171,6 +171,29 @@ public class TeamServiceTest {
                 any(TeamId.class), any(Pageable.class));
         printTime(stopWatch.getTotalTimeMillis());
     }
+    
+    @DisplayName("프로젝트 추가")
+    @Test
+    void addProject() {
+        // given
+        StopWatch stopWatch = new StopWatch();
+        NameDto nameDto = new NameDto("Flock");
+        Team team = new Team(1L, "NewFangled");
+        Project project = new Project(1L, new TeamId(team), nameDto.getName());
 
+        lenient().when(teamRepository.findById(anyLong()))
+                .thenReturn(Optional.of(team));
+        lenient().when(projectRepository.save(any(Project.class)))
+                .thenReturn(project);
 
+        // when
+        stopWatch.start();
+        ProjectDto projectDto = teamService.createProject(1L, nameDto);
+        stopWatch.stop();
+        
+        // then
+        assertThat(projectDto).isNotNull();
+        assertThat(projectDto.getName()).isEqualTo(nameDto.getName());
+        printTime(stopWatch.getTotalTimeMillis());
+    }
 }

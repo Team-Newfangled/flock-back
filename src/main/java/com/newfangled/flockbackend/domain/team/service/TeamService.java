@@ -1,6 +1,7 @@
 package com.newfangled.flockbackend.domain.team.service;
 
 import com.newfangled.flockbackend.domain.member.entity.Member;
+import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
@@ -67,8 +68,11 @@ public class TeamService {
         return new PageDto<>(teamMembers);
     }
 
-    public ProjectDto createProject(NameDto nameDto) {
-        return null;
+    public ProjectDto createProject(long id, NameDto nameDto) {
+        TeamId teamId = getTeamId(findById(id));
+        Project project = projectRepository
+                .save(new Project(null, teamId, nameDto.getName()));
+        return new ProjectDto(project);
     }
 
     @Transactional(readOnly = true)
