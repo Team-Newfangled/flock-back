@@ -132,14 +132,6 @@ class MemberControllerTest {
         when(accountRepository.findById(anyLong()))
                 .thenReturn(Optional.of(account));
     }
-
-    private String token() {
-        return String.format("Bearer %s", jwtTokenProvider.generateAccessToken("1"));
-    }
-
-    private String fakeToken() {
-        return "Bearer NULL";
-    }
     
     @DisplayName("사용자 닉네임 변경 성공")
     @Test
@@ -158,7 +150,7 @@ class MemberControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/users/1/name",
-                content, "patch", token()
+                content, "patch", ControllerTestUtil.getAccessToken(jwtTokenProvider)
         );
         
         // then
@@ -182,7 +174,7 @@ class MemberControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/users/1/name",
-                content, "patch", fakeToken()
+                content, "patch", ControllerTestUtil.getFakeToken()
         );
 
         // then
@@ -206,7 +198,7 @@ class MemberControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/users/1",
-                "", "GET", token()
+                "", "GET", ControllerTestUtil.getAccessToken(jwtTokenProvider)
         );
 
         // then
@@ -230,7 +222,7 @@ class MemberControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/users/1",
-                "", "GET", fakeToken()
+                "", "GET", ControllerTestUtil.getFakeToken()
         );
 
         // then
@@ -256,7 +248,7 @@ class MemberControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/users/1/picture",
-                content, "PATCH", token()
+                content, "PATCH", ControllerTestUtil.getAccessToken(jwtTokenProvider)
         );
 
         // then
@@ -279,7 +271,7 @@ class MemberControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/users/1/organization",
-                "", "get", token()
+                "", "get", ControllerTestUtil.getAccessToken(jwtTokenProvider)
         );
 
         // then
@@ -304,7 +296,7 @@ class MemberControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/users/1/organization",
-                content, "patch", token()
+                content, "patch", ControllerTestUtil.getAccessToken(jwtTokenProvider)
         );
 
         // then
@@ -335,7 +327,7 @@ class MemberControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/users/1/team",
-                "", "GET", token()
+                "", "GET", ControllerTestUtil.getAccessToken(jwtTokenProvider)
         );
 
         // then
@@ -366,7 +358,7 @@ class MemberControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/users/1/team",
-                "", "GET", fakeToken()
+                "", "GET", ControllerTestUtil.getFakeToken()
         );
 
         // then
