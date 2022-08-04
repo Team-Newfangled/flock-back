@@ -48,7 +48,11 @@ public class TeamService {
     }
 
     public void expulsionMember(long id, long userId) {
-
+        Team team = findById(id);
+        TeamMember teamMember = teamMemberRepository
+                .findByMember_IdAndTeamId_Id(userId, team.getId())
+                .orElseThrow(TeamMember.NoMemberException::new);
+        teamMemberRepository.delete(teamMember);
     }
 
     public PageDto<ProjectDto> findAllMember(long id, int page) {

@@ -322,7 +322,7 @@ class MemberControllerTest {
             results.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader));
         }
         List<NameDto> dtoList = results.stream()
-                .map(TeamMember::getAccount)
+                .map(TeamMember::getMember)
                 .map(Member::getCompany)
                 .map(NameDto::new)
                 .collect(Collectors.toList());
@@ -353,7 +353,7 @@ class MemberControllerTest {
             results.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader));
         }
         List<NameDto> dtoList = results.stream()
-                .map(TeamMember::getAccount)
+                .map(TeamMember::getMember)
                 .map(Member::getCompany)
                 .map(NameDto::new)
                 .collect(Collectors.toList());

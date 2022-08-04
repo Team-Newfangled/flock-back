@@ -11,6 +11,7 @@ import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.domain.team.repository.TeamRepository;
 import com.newfangled.flockbackend.domain.team.service.TeamService;
+import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.dto.NameDto;
 import com.newfangled.flockbackend.global.dto.response.PageDto;
 import com.newfangled.flockbackend.global.embed.TeamId;
@@ -29,7 +30,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -111,9 +112,38 @@ public class TeamServiceTest {
         stopWatch.stop();
 
         // then
+        assertThat(teamProjects).isNotNull();
+        assertThat(teamProjects.getResults().size()).isEqualTo(1);
+        assertThat(teamProjects.getPage()).isEqualTo(0);
         printTime(stopWatch.getTotalTimeMillis());
-
     }
+
+    @DisplayName("팀원 퇴출")
+    @Test
+    void expulsionMember() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+
+        // 로직: 팀들 중에서 회원 id 를 delete
+        Team team = new Team(1L, "NewFangled");
+        TeamId teamId = new TeamId(team);
+        Member member = teamMaker(oAuth());
+        TeamMember teamMember = new TeamMember(teamId, member, Role.Member);
+
+        lenient().when(teamRepository.findById(anyLong()))
+                        .thenReturn(Optional.of(team));
+        lenient().when(teamMemberRepository.findByMember_IdAndTeamId_Id(anyLong(), anyLong()))
+                        .thenReturn(Optional.of(teamMember));
+
+        // when
+        stopWatch.start();
+        teamService.expulsionMember(1L, 1L);
+        stopWatch.stop();
+
+        verify(teamMemberRepository, times(1)).delete(any(TeamMember.class));
+        printTime(stopWatch.getTotalTimeMillis());
+    }
+
 
 
 }

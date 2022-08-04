@@ -70,9 +70,9 @@ public class AccountService {
     }
 
     public ResultListDto<NameDto> findAllTeams(long accountId) {
-        List<NameDto> companyNames = teamMemberRepository.findDistinctByAccount_Id(accountId)
+        List<NameDto> companyNames = teamMemberRepository.findDistinctByMember_Id(accountId)
                 .stream()
-                .map(TeamMember::getAccount)
+                .map(TeamMember::getMember)
                 .map(Member::getCompany)
                 .map(NameDto::new)
                 .collect(Collectors.toList());
