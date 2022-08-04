@@ -4,6 +4,7 @@ import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
+import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
@@ -34,10 +35,10 @@ public class TeamService {
         return new TeamId(team);
     }
 
-    public ProjectDto createTeam(Member member, NameDto nameDto) {
+    public TeamDto createTeam(Member member, NameDto nameDto) {
         Team team = teamRepository.save(new Team(null, nameDto.getName()));
         teamMemberRepository.save(new TeamMember(getTeamId(team), member, Role.Leader));
-        return new ProjectDto(team.getId(), team.getName());
+        return new TeamDto(team.getId(), team.getName());
     }
 
     public PageDto<ProjectDto> findAllTeamProjects(long teamId, int page) {

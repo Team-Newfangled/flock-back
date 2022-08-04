@@ -6,6 +6,7 @@ import com.newfangled.flockbackend.domain.member.type.UserRole;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
+import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
@@ -85,12 +86,12 @@ public class TeamServiceTest {
                 .thenReturn(null);
         // when
         stopWatch.start();
-        ProjectDto projectDto1 = teamService.createTeam(any(Member.class), nameDto);
+        TeamDto teamDto = teamService.createTeam(any(Member.class), nameDto);
         stopWatch.stop();
 
         // then
-        assertThat(projectDto1).isNotNull();
-        assertThat(projectDto1.getName()).isEqualTo(projectDto.getName());
+        assertThat(teamDto).isNotNull();
+        assertThat(teamDto.getTeamName()).isEqualTo(projectDto.getName());
         printTime(stopWatch.getTotalTimeMillis());
     }
 
