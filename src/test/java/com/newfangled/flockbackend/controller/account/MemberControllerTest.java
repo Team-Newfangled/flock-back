@@ -6,7 +6,7 @@ import com.newfangled.flockbackend.domain.member.controller.AccountController;
 import com.newfangled.flockbackend.domain.member.dto.response.ProfileDto;
 import com.newfangled.flockbackend.domain.member.embed.OAuth;
 import com.newfangled.flockbackend.domain.member.entity.Member;
-import com.newfangled.flockbackend.domain.member.repository.AccountRepository;
+import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.member.service.AccountService;
 import com.newfangled.flockbackend.domain.member.service.AuthDetailsService;
 import com.newfangled.flockbackend.domain.member.type.UserRole;
@@ -81,7 +81,7 @@ class MemberControllerTest {
     private AccountService accountService;
 
     @MockBean
-    private AccountRepository accountRepository;
+    private MemberRepository memberRepository;
 
     @MockBean
     private TeamMemberRepository teamMemberRepository;
@@ -127,23 +127,18 @@ class MemberControllerTest {
                 List.of(new LinkDto("self", "GET", "/users/1"))
         );
     }
-
-    private void stumpAccount(Member account) {
-        when(accountRepository.findById(anyLong()))
-                .thenReturn(Optional.of(account));
-    }
     
     @DisplayName("사용자 닉네임 변경 성공")
     @Test
     void changeNicknameSuccess() throws Exception {
         // given
         OAuth oAuth = oAuth();
-        Member account = account(oAuth);
+        Member member = account(oAuth);
         NameDto nameDto = new NameDto(randomString());
         LinkListDto linkListDto = linkListDto("닉네임");
         String content = objectMapper.writeValueAsString(nameDto);
 
-        stumpAccount(account);
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.updateNickname(anyLong(), any(NameDto.class)))
                 .thenReturn(linkListDto);
     
@@ -163,11 +158,11 @@ class MemberControllerTest {
     void changeNicknameFailed() throws Exception {
         // given
         OAuth oAuth = oAuth();
-        Member account = account(oAuth);
+        Member member = account(oAuth);
         NameDto nameDto = new NameDto(randomString());
         String content = objectMapper.writeValueAsString(nameDto);
 
-        stumpAccount(account);
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.updateNickname(anyLong(), any(NameDto.class)))
                 .thenThrow(new Member.UnauthorizedException());
 
@@ -188,10 +183,10 @@ class MemberControllerTest {
     void findUserPictureSuccess() throws Exception {
         // given
         OAuth oAuth = oAuth();
-        Member account = account(oAuth);
-        ProfileDto profileDto = new ProfileDto(account);
+        Member member = account(oAuth);
+        ProfileDto profileDto = new ProfileDto(member);
 
-        stumpAccount(account);
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.findAccountById(anyLong()))
                 .thenReturn(profileDto);
 
@@ -213,9 +208,9 @@ class MemberControllerTest {
     void findUserPictureFailed() throws Exception {
         // given
         OAuth oAuth = oAuth();
-        Member account = account(oAuth);
+        Member member = account(oAuth);
 
-        stumpAccount(account);
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.findAccountById(anyLong()))
                 .thenThrow(new Member.UnauthorizedException());
 
@@ -236,12 +231,12 @@ class MemberControllerTest {
     void changeUserPictureSuccess() throws Exception {
         // given
         OAuth oAuth = oAuth();
-        Member account = account(oAuth);
+        Member member = account(oAuth);
         ContentDto contentDto = new ContentDto(randomString() + ".png");
         LinkListDto linkListDto = linkListDto("사진");
         String content = objectMapper.writeValueAsString(contentDto);
 
-        stumpAccount(account);
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.updatePicture(anyLong(), any(ContentDto.class)))
                 .thenReturn(linkListDto);
 
@@ -261,10 +256,10 @@ class MemberControllerTest {
     void findCompanySuccess() throws Exception {
         // given
         OAuth oAuth = oAuth();
-        Member account = account(oAuth);
+        Member member = account(oAuth);
         NameDto nameDto = new NameDto(randomString());
 
-        stumpAccount(account);
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.findCompany(anyLong()))
                 .thenReturn(nameDto);
 
@@ -284,12 +279,12 @@ class MemberControllerTest {
     void changeCompanySuccess() throws Exception {
         // given
         OAuth oAuth = oAuth();
-        Member account = account(oAuth);
+        Member member = account(oAuth);
         NameDto nameDto = new NameDto(randomString());
         LinkListDto linkListDto = linkListDto("회사명");
         String content = objectMapper.writeValueAsString(nameDto);
 
-        stumpAccount(account);
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.updateNickname(anyLong(), any(NameDto.class)))
                 .thenReturn(linkListDto);
 
@@ -308,10 +303,10 @@ class MemberControllerTest {
     @Test
     void findAllTeamsSuccess() throws Exception {
         // given
-        Member account = account(oAuth());
+        Member member = account(oAuth());
         List<TeamMember> results = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            results.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader));
+            results.add(new TeamMember(new TeamId(team(i, randomString())), member, Role.Leader));
         }
         List<NameDto> dtoList = results.stream()
                 .map(TeamMember::getMember)
@@ -320,7 +315,7 @@ class MemberControllerTest {
                 .collect(Collectors.toList());
         ResultListDto<NameDto> listDto = new ResultListDto<>(dtoList);
 
-        stumpAccount(account);
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.findAllTeams(anyLong()))
                 .thenReturn(listDto);
 
@@ -339,10 +334,10 @@ class MemberControllerTest {
     @Test
     void finaAllTeamsFailed() throws Exception {
         // given
-        Member account = account(oAuth());
+        Member member = account(oAuth());
         List<TeamMember> results = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            results.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader));
+            results.add(new TeamMember(new TeamId(team(i, randomString())), member, Role.Leader));
         }
         List<NameDto> dtoList = results.stream()
                 .map(TeamMember::getMember)
@@ -351,7 +346,7 @@ class MemberControllerTest {
                 .collect(Collectors.toList());
         ResultListDto<NameDto> listDto = new ResultListDto<>(dtoList);
 
-        stumpAccount(account);
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.findAllTeams(anyLong()))
                 .thenReturn(listDto);
 

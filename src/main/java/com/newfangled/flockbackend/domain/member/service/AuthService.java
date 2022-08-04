@@ -5,7 +5,7 @@ import com.newfangled.flockbackend.domain.member.dto.response.OAuthResponseDto;
 import com.newfangled.flockbackend.domain.member.dto.response.TokenRefreshResponse;
 import com.newfangled.flockbackend.domain.member.embed.OAuth;
 import com.newfangled.flockbackend.domain.member.entity.Member;
-import com.newfangled.flockbackend.domain.member.repository.AccountRepository;
+import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.member.type.UserRole;
 import com.newfangled.flockbackend.global.config.infra.oauth.GoogleAuthConfiguration;
 import com.newfangled.flockbackend.global.infra.oauth.google.GoogleApiService;
@@ -29,7 +29,7 @@ public class AuthService {
     private final GoogleAuthConfiguration googleAuthConfiguration;
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final AccountRepository accountRepository;
+    private final MemberRepository memberRepository;
 
     public TokenRefreshResponse refreshToken(Member account,
                                              TokenRefreshRequest tokenRefreshRequest) {
@@ -47,7 +47,7 @@ public class AuthService {
                 = getUserInfoResponse(accessTokenResponse.getAccessToken());
         log.info(userInfoResponse.toString());
 
-        Member account = accountRepository.findByOAuth_OauthId(userInfoResponse.getOpenId())
+        Member account = memberRepository.findByOAuth_OauthId(userInfoResponse.getOpenId())
                 .orElseGet(() -> joinOAuthUser(userInfoResponse));
 
         return new OAuthResponseDto(
@@ -108,6 +108,6 @@ public class AuthService {
                 .role(UserRole.MEMBER)
                 .oAuth(oAuth)
                 .build();
-        return accountRepository.save(account);
+        return memberRepository.save(account);
     }
 }

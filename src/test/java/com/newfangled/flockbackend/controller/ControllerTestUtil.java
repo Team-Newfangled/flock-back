@@ -1,11 +1,17 @@
 package com.newfangled.flockbackend.controller;
 
+import com.newfangled.flockbackend.domain.member.entity.Member;
+import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
+import java.util.Optional;
+
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 public class ControllerTestUtil {
@@ -44,5 +50,11 @@ public class ControllerTestUtil {
 
     public static String getFakeToken() {
         return "Bearer NULL";
+    }
+
+    public static void authenticateStumpMember(Member member,
+                                               MemberRepository memberRepository) {
+        when(memberRepository.findById(anyLong()))
+                .thenReturn(Optional.of(member));
     }
 }
