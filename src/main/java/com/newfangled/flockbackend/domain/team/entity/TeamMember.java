@@ -33,4 +33,11 @@ public class TeamMember {
             super(HttpStatus.NOT_FOUND, "팀원을 찾지 못했습니다.");
         }
     }
+
+    public static class NoPermissionException extends BusinessException {
+        public NoPermissionException() {
+            super(HttpStatus.FORBIDDEN, "퇴출시킬 수 있는 권한이 없습니다.");
+        }
+    }
+
 }

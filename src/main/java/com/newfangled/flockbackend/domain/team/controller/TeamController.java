@@ -35,8 +35,9 @@ public class TeamController {
 
     @DeleteMapping("{id}/expulsion/{user-id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void expulsionMember(@PathVariable("id") long id,
+    public void expulsionMember(Authentication authentication,
+                                @PathVariable("id") long id,
                                 @PathVariable("user-id") long userId) {
-        teamService.expulsionMember(id, userId);
+        teamService.expulsionMember((Member) authentication.getPrincipal(), id, userId);
     }
 }

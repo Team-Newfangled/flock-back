@@ -131,7 +131,7 @@ public class TeamServiceTest {
         Team team = new Team(1L, "NewFangled");
         TeamId teamId = new TeamId(team);
         Member member = teamMaker(oAuth());
-        TeamMember teamMember = new TeamMember(teamId, member, Role.Member);
+        TeamMember teamMember = new TeamMember(teamId, member, Role.Leader);
 
         lenient().when(teamRepository.findById(anyLong()))
                         .thenReturn(Optional.of(team));
@@ -140,7 +140,7 @@ public class TeamServiceTest {
 
         // when
         stopWatch.start();
-        teamService.expulsionMember(1L, 1L);
+        teamService.expulsionMember(member, 1L, 1L);
         stopWatch.stop();
 
         verify(teamMemberRepository, times(1)).delete(any(TeamMember.class));

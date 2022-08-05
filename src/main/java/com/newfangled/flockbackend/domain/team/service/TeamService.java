@@ -51,8 +51,15 @@ public class TeamService {
         return new PageDto<>(teamProjects);
     }
 
-    public void expulsionMember(long id, long userId) {
+    public void expulsionMember(Member member, long id, long userId) {
         Team team = findById(id);
+        TeamMember leader = teamMemberRepository
+                .findByMember_IdAndTeamId_Id(member.getId(), team.getId())
+                .orElseThrow(TeamMember.NoPermissionException::new);
+        if (leader.getRole() != Role.Leader) {
+            throw new TeamMember.NoPermissionException();
+        }
+
         TeamMember teamMember = teamMemberRepository
                 .findByMember_IdAndTeamId_Id(userId, team.getId())
                 .orElseThrow(TeamMember.NoMemberException::new);
