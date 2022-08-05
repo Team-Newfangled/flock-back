@@ -152,9 +152,26 @@ public class TeamControllerTest {
                 .andExpect(jsonPath("$.results").exists())
                 .andExpect(jsonPath("$.results.size()").value(3));
     }
+
+    @DisplayName("팀 프로젝트 조회 실패")
+    @Test
+    void findProjectsTestFailed() throws Exception {
+        // given
+        Member member = member();
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().when(teamService.findAllTeamProjects(anyLong(), anyInt()))
+                .thenThrow(new Team.NotExistsException());
     
-
-
-
-
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/teams/1/projects?page=0",
+                null, "get", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+        
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound());
+    }
 }
