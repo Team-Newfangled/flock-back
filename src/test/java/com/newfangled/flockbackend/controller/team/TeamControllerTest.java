@@ -174,4 +174,26 @@ public class TeamControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().isNotFound());
     }
+    
+    @DisplayName("팀원 퇴출 성공")
+    @Test
+    void expulsionMember() throws Exception {
+        // given
+        Member member = member();
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().doNothing().when(teamService).expulsionMember(anyLong(), anyLong());
+    
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/teams/1/expulsion/1",
+                null, "delete", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(status().isNoContent());
+    }
+    
 }

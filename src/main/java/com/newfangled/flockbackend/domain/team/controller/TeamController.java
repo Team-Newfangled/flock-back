@@ -32,4 +32,11 @@ public class TeamController {
                                             @RequestParam("page") int page) {
         return teamService.findAllTeamProjects(id, page);
     }
+
+    @DeleteMapping("{id}/expulsion/{user-id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void expulsionMember(@PathVariable("id") long id,
+                                @PathVariable("user-id") long userId) {
+        teamService.expulsionMember(id, userId);
+    }
 }
