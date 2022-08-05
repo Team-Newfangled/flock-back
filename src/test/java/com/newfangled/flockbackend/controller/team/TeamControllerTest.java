@@ -6,8 +6,10 @@ import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.member.service.AuthDetailsService;
 import com.newfangled.flockbackend.domain.member.type.UserRole;
+import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.team.controller.TeamController;
+import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
@@ -15,6 +17,7 @@ import com.newfangled.flockbackend.domain.team.repository.TeamRepository;
 import com.newfangled.flockbackend.domain.team.service.TeamService;
 import com.newfangled.flockbackend.global.config.jwt.JwtConfiguration;
 import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.response.PageDto;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,8 +37,10 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import java.util.List;
+
 import static net.bytebuddy.matcher.ElementMatchers.is;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -88,6 +93,10 @@ public class TeamControllerTest {
                 .build();
     }
 
+    private ProjectDto randomProject(long id) {
+        return new ProjectDto(id, ControllerTestUtil.randomString());
+    }
+
     @DisplayName("팀 만들기 테스트 성공")
     @Test
     void createTeamSuccess() throws Exception {
@@ -116,7 +125,34 @@ public class TeamControllerTest {
                 .andExpect(jsonPath("$.team-name").value(nameDto.getName()));
     }
 
+    @DisplayName("팀 프로젝트 조회 성공")
+    @Test
+    void findProjectsTestSuccess() throws Exception {
+        // given
+        Member member = member();
+        PageDto<ProjectDto> pageDto = new PageDto<>(
+                0, 1, List.of(
+                        randomProject(1), randomProject(2), randomProject(3)
+                )
+        );
 
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().when(teamService.findAllTeamProjects(anyLong(), anyInt()))
+                .thenReturn(pageDto);
+    
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/teams/1/projects/?page=0",
+                "", "get", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+        
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.results").exists())
+                .andExpect(jsonPath("$.results.size()").value(3));
+    }
+    
 
 
 
