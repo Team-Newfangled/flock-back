@@ -110,18 +110,6 @@ class MemberControllerTest {
                 .build();
     }
 
-    private String randomString() {
-        return new Random().ints(48, 123)
-                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-                .limit(10)
-                .collect(
-                        StringBuilder::new,
-                        StringBuilder::appendCodePoint,
-                        StringBuilder::append
-                )
-                .toString();
-    }
-
     private LinkListDto linkListDto(String topic) {
         return new LinkListDto(String.format("%s을 수정하였습니다.", topic),
                 List.of(new LinkDto("self", "GET", "/users/1"))
@@ -134,7 +122,7 @@ class MemberControllerTest {
         // given
         OAuth oAuth = oAuth();
         Member member = account(oAuth);
-        NameDto nameDto = new NameDto(randomString());
+        NameDto nameDto = new NameDto(ControllerTestUtil.randomString());
         LinkListDto linkListDto = linkListDto("닉네임");
         String content = objectMapper.writeValueAsString(nameDto);
 
@@ -159,7 +147,7 @@ class MemberControllerTest {
         // given
         OAuth oAuth = oAuth();
         Member member = account(oAuth);
-        NameDto nameDto = new NameDto(randomString());
+        NameDto nameDto = new NameDto(ControllerTestUtil.randomString());
         String content = objectMapper.writeValueAsString(nameDto);
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
@@ -232,7 +220,7 @@ class MemberControllerTest {
         // given
         OAuth oAuth = oAuth();
         Member member = account(oAuth);
-        ContentDto contentDto = new ContentDto(randomString() + ".png");
+        ContentDto contentDto = new ContentDto(ControllerTestUtil.randomString() + ".png");
         LinkListDto linkListDto = linkListDto("사진");
         String content = objectMapper.writeValueAsString(contentDto);
 
@@ -257,7 +245,7 @@ class MemberControllerTest {
         // given
         OAuth oAuth = oAuth();
         Member member = account(oAuth);
-        NameDto nameDto = new NameDto(randomString());
+        NameDto nameDto = new NameDto(ControllerTestUtil.randomString());
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.findCompany(anyLong()))
@@ -280,7 +268,7 @@ class MemberControllerTest {
         // given
         OAuth oAuth = oAuth();
         Member member = account(oAuth);
-        NameDto nameDto = new NameDto(randomString());
+        NameDto nameDto = new NameDto(ControllerTestUtil.randomString());
         LinkListDto linkListDto = linkListDto("회사명");
         String content = objectMapper.writeValueAsString(nameDto);
 
@@ -306,7 +294,7 @@ class MemberControllerTest {
         Member member = account(oAuth());
         List<TeamMember> results = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            results.add(new TeamMember(new TeamId(team(i, randomString())), member, Role.Leader));
+            results.add(new TeamMember(new TeamId(team(i, ControllerTestUtil.randomString())), member, Role.Leader));
         }
         List<NameDto> dtoList = results.stream()
                 .map(TeamMember::getMember)
@@ -337,7 +325,7 @@ class MemberControllerTest {
         Member member = account(oAuth());
         List<TeamMember> results = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            results.add(new TeamMember(new TeamId(team(i, randomString())), member, Role.Leader));
+            results.add(new TeamMember(new TeamId(team(i, ControllerTestUtil.randomString())), member, Role.Leader));
         }
         List<NameDto> dtoList = results.stream()
                 .map(TeamMember::getMember)

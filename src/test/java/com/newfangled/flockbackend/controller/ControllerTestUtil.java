@@ -9,6 +9,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import java.util.Optional;
+import java.util.Random;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -37,7 +38,7 @@ public class ControllerTestUtil {
                                               String token) throws Exception {
         return mockMvc.perform(
                 method(method, uri)
-                        .content(content)
+                        .content((content == null) ? "" : content)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", (token == null) ? "" : token)
                         .accept(MediaType.APPLICATION_JSON)
@@ -56,5 +57,17 @@ public class ControllerTestUtil {
                                                MemberRepository memberRepository) {
         when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(member));
+    }
+
+    public static String randomString() {
+        return new Random().ints(48, 123)
+                .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+                .limit(10)
+                .collect(
+                        StringBuilder::new,
+                        StringBuilder::appendCodePoint,
+                        StringBuilder::append
+                )
+                .toString();
     }
 }
