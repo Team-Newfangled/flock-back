@@ -12,6 +12,7 @@ import com.newfangled.flockbackend.domain.team.controller.TeamController;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
 import com.newfangled.flockbackend.domain.team.entity.Team;
+import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.domain.team.repository.TeamRepository;
 import com.newfangled.flockbackend.domain.team.service.TeamService;
@@ -39,7 +40,6 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
 
-import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.lenient;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -177,12 +177,13 @@ public class TeamControllerTest {
     
     @DisplayName("팀원 퇴출 성공")
     @Test
-    void expulsionMember() throws Exception {
+    void expulsionMemberSuccess() throws Exception {
         // given
         Member member = member();
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
-        lenient().doNothing().when(teamService).expulsionMember(anyLong(), anyLong());
+        lenient().doNothing().when(teamService)
+                .expulsionMember(any(), anyLong(), anyLong());
     
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
@@ -195,5 +196,28 @@ public class TeamControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(status().isNoContent());
     }
+
+    @DisplayName("팀원 퇴출 실패")
+    @Test
+    void expulsionMemberFailed() throws Exception {
+        // given
+        Member member = member();
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().doThrow(new TeamMember.NoPermissionException())
+                .when(teamService).expulsionMember(any(), anyLong(), anyLong());
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/teams/1/expulsion/1",
+                null, "delete", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isForbidden());
+    }
+
     
 }
