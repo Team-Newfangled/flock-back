@@ -48,4 +48,10 @@ public class TeamController {
         return teamService.findAllMember(id, page);
     }
 
+    @PostMapping("/{id}/projects")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProjectDto addProject(@PathVariable("id") long id,
+                                 @RequestBody @Valid final NameDto nameDto) {
+        return teamService.createProject(id, nameDto);
+    }
 }

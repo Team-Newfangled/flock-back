@@ -6,7 +6,6 @@ import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.member.service.AuthDetailsService;
 import com.newfangled.flockbackend.domain.member.type.UserRole;
-import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.team.controller.TeamController;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
@@ -233,7 +232,7 @@ public class TeamControllerTest {
         // given
         Member member = member();
         PageDto<TeamMemberRO> teamMemberPage = new PageDto<>(
-                0, 1, List.of(randomTeamMember(0), randomTeamMember(1))
+                0, 1, List.of(randomTeamMember(1), randomTeamMember(2))
         );
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
@@ -250,4 +249,31 @@ public class TeamControllerTest {
         resultActions.andDo(print())
                 .andExpect(jsonPath("$.results").exists());
     }
+    
+    @DisplayName("프로젝트 추가 성공")
+    @Test
+    void addProjectSuccess() throws Exception {
+        // given
+        Member member = member();
+        NameDto nameDto = new NameDto(ControllerTestUtil.randomString());
+        ProjectDto projectDto = new ProjectDto(1L, nameDto.getName());
+        String content = objectMapper.writeValueAsString(nameDto);
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().when(teamService.createProject(anyLong(), any(NameDto.class)))
+                .thenReturn(projectDto);
+    
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/teams/1/projects",
+                content, "post", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+        
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").exists())
+                .andExpect(jsonPath("$.name").value(nameDto.getName()));
+    }
+    
 }
