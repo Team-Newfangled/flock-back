@@ -2,7 +2,7 @@ package com.newfangled.flockbackend.domain.member.service;
 
 import com.newfangled.flockbackend.domain.member.dto.response.ProfileDto;
 import com.newfangled.flockbackend.domain.member.entity.Member;
-import com.newfangled.flockbackend.domain.member.repository.AccountRepository;
+import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.global.dto.NameDto;
@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountService {
 
-    private final AccountRepository accountRepository;
+    private final MemberRepository memberRepository;
     private final TeamMemberRepository teamMemberRepository;
 
     public ProfileDto findAccountById(long accountId) {
@@ -53,7 +53,7 @@ public class AccountService {
 
     @Transactional(readOnly = true)
     public NameDto findCompany(long accountId) {
-        Member account = accountRepository.findById(accountId)
+        Member account = memberRepository.findById(accountId)
                 .orElseThrow(Member.NotExistsException::new);
         return new NameDto(account.getCompany());
     }
@@ -70,9 +70,9 @@ public class AccountService {
     }
 
     public ResultListDto<NameDto> findAllTeams(long accountId) {
-        List<NameDto> companyNames = teamMemberRepository.findDistinctByAccount_Id(accountId)
+        List<NameDto> companyNames = teamMemberRepository.findDistinctByMember_Id(accountId)
                 .stream()
-                .map(TeamMember::getAccount)
+                .map(TeamMember::getMember)
                 .map(Member::getCompany)
                 .map(NameDto::new)
                 .collect(Collectors.toList());
@@ -81,7 +81,7 @@ public class AccountService {
 
     @Transactional(readOnly = true)
     protected Member findById(long accountId) {
-        return accountRepository.findById(accountId)
+        return memberRepository.findById(accountId)
                 .orElseThrow(Member.NotExistsException::new);
     }
 }

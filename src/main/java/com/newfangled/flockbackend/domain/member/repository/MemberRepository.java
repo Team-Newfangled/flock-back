@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface AccountRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("select a from Member a where a.oAuth.oauthId = ?1")
     Optional<Member> findByOAuth_OauthId(String OAuth_oauthId);

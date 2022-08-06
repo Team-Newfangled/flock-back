@@ -3,7 +3,7 @@ package com.newfangled.flockbackend.service.account;
 import com.newfangled.flockbackend.domain.member.dto.response.ProfileDto;
 import com.newfangled.flockbackend.domain.member.embed.OAuth;
 import com.newfangled.flockbackend.domain.member.entity.Member;
-import com.newfangled.flockbackend.domain.member.repository.AccountRepository;
+import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.member.service.AccountService;
 import com.newfangled.flockbackend.domain.member.type.UserRole;
 import com.newfangled.flockbackend.domain.team.entity.Team;
@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
 class MemberServiceTest {
 
     @Mock
-    private AccountRepository accountRepository;
+    private MemberRepository memberRepository;
 
     @Mock
     private TeamMemberRepository teamMemberRepository;
@@ -94,7 +94,7 @@ class MemberServiceTest {
         // given
         OAuth oAuth = oAuth();
         Member account = account(oAuth);
-        lenient().when(accountRepository.findById(anyLong()))
+        lenient().when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(account));
         NameDto nameDto = new NameDto(randomString());
 
@@ -110,7 +110,7 @@ class MemberServiceTest {
         assertThat(account.getOAuth().getName()).isEqualTo(nameDto.getName());
 
         // verify
-        verify(accountRepository, times(1))
+        verify(memberRepository, times(1))
                 .findById(anyLong());
 
         // finally
@@ -124,7 +124,7 @@ class MemberServiceTest {
         // given
         OAuth oAuth = oAuth();
         Member account = account(oAuth);
-        lenient().when(accountRepository.findById(anyLong()))
+        lenient().when(memberRepository.findById(anyLong()))
                         .thenReturn(Optional.of(account));
 
         // when
@@ -149,7 +149,7 @@ class MemberServiceTest {
         // given
         OAuth oAuth = oAuth();
         Member account = account(oAuth);
-        lenient().when(accountRepository.findById(anyLong()))
+        lenient().when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(account));
         ContentDto contentDto = new ContentDto(randomString());
 
@@ -165,7 +165,7 @@ class MemberServiceTest {
         assertThat(account.getOAuth().getPictureUrl()).isEqualTo(contentDto.getContent());
 
         // verify
-        verify(accountRepository, times(1))
+        verify(memberRepository, times(1))
                 .findById(anyLong());
 
         // finally
@@ -179,7 +179,7 @@ class MemberServiceTest {
         // given
         OAuth oAuth = oAuth();
         Member account = account(oAuth);
-        lenient().when(accountRepository.findById(anyLong()))
+        lenient().when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(account));
 
         // when
@@ -202,7 +202,7 @@ class MemberServiceTest {
         // given
         OAuth oAuth = oAuth();
         Member account = account(oAuth);
-        lenient().when(accountRepository.findById(anyLong()))
+        lenient().when(memberRepository.findById(anyLong()))
                 .thenReturn(Optional.of(account));
         NameDto nameDto = new NameDto(randomString());
 
@@ -218,7 +218,7 @@ class MemberServiceTest {
         assertThat(account.getCompany()).isEqualTo(nameDto.getName());
 
         // verify
-        verify(accountRepository, times(1))
+        verify(memberRepository, times(1))
                 .findById(anyLong());
 
         // finally
@@ -236,7 +236,7 @@ class MemberServiceTest {
         for (int i = 0; i < 8; i++) {
             teamMemberList.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader));
         }
-        lenient().when(teamMemberRepository.findDistinctByAccount_Id(anyLong()))
+        lenient().when(teamMemberRepository.findDistinctByMember_Id(anyLong()))
                 .thenReturn(teamMemberList);
 
         // when
@@ -251,7 +251,7 @@ class MemberServiceTest {
 
         // verify
         verify(teamMemberRepository, times(1))
-                .findDistinctByAccount_Id(anyLong());
+                .findDistinctByMember_Id(anyLong());
 
         // finally
         printTime(stopWatch.getTotalTimeMillis());
