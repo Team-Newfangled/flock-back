@@ -11,6 +11,7 @@ import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.team.controller.TeamController;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
+import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
@@ -91,6 +92,13 @@ public class TeamControllerTest {
                 .company("MyCompany")
                 .role(UserRole.MEMBER)
                 .build();
+    }
+
+    private TeamMemberRO randomTeamMember(long id) {
+        String randomString = ControllerTestUtil.randomString();
+        return new TeamMemberRO(
+                id, randomString, String.format("/users/%s", randomString)
+        );
     }
 
     private ProjectDto randomProject(long id) {
@@ -218,6 +226,28 @@ public class TeamControllerTest {
                 .andExpect(status().is4xxClientError())
                 .andExpect(status().isForbidden());
     }
-
     
+    @DisplayName("팀원 조회 성공")
+    @Test
+    void findMemberSuccess() throws Exception {
+        // given
+        Member member = member();
+        PageDto<TeamMemberRO> teamMemberPage = new PageDto<>(
+                0, 1, List.of(randomTeamMember(0), randomTeamMember(1))
+        );
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().when(teamService.findAllMember(anyLong(), anyInt()))
+                .thenReturn(teamMemberPage);
+    
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/teams/1/members?page=0",
+                null, "get", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+        
+        // then
+        resultActions.andDo(print())
+                .andExpect(jsonPath("$.results").exists());
+    }
 }

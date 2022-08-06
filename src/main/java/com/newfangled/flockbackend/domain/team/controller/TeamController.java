@@ -3,6 +3,7 @@ package com.newfangled.flockbackend.domain.team.controller;
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
+import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
 import com.newfangled.flockbackend.domain.team.service.TeamService;
 import com.newfangled.flockbackend.global.dto.NameDto;
 import com.newfangled.flockbackend.global.dto.response.PageDto;
@@ -40,4 +41,11 @@ public class TeamController {
                                 @PathVariable("user-id") long userId) {
         teamService.expulsionMember((Member) authentication.getPrincipal(), id, userId);
     }
+
+    @GetMapping("/{id}/members")
+    public PageDto<TeamMemberRO> findMembers(@PathVariable("id") long id,
+                                    @RequestParam int page) {
+        return teamService.findAllMember(id, page);
+    }
+
 }
