@@ -276,4 +276,29 @@ public class TeamControllerTest {
                 .andExpect(jsonPath("$.name").value(nameDto.getName()));
     }
     
+    @DisplayName("프로젝트 추가 실패")
+    @Test
+    void addProjectFailed() throws Exception {
+        // given
+        Member member = member();
+        NameDto nameDto = new NameDto(ControllerTestUtil.randomString());
+        String content = objectMapper.writeValueAsString(nameDto);
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().when(teamService.createProject(anyLong(), any(NameDto.class)))
+                .thenThrow(new Team.NotExistsException());
+    
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/teams/1/projects",
+                content, "post", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+        
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().is4xxClientError())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").exists());
+    }
+    
 }
