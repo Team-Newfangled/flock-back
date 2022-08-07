@@ -28,6 +28,10 @@ public class Project {
         this.team = team;
     }
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
     public static class NotExistsException extends BusinessException {
         public NotExistsException() {
             super(HttpStatus.NOT_FOUND, "존재하지 않는 프로젝트입니다.");

@@ -10,6 +10,8 @@ import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.domain.team.type.Role;
+import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.embed.TeamId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -133,5 +135,53 @@ public class ProjectServiceTest {
         printTime("프로젝트 삭제 성공 테스트", stopWatch.getTotalTimeMillis());
 
         verify(projectRepository, times(1)).delete(any(Project.class));
+    }
+
+    @DisplayName("프로젝트 수정 실패 테스트")
+    @Test
+    void modifyProjectFailed() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        lenient().when(projectRepository.findById(anyLong()))
+                .thenThrow(new Project.NotExistsException());
+
+        // when
+        stopWatch.start();
+        Project.NotExistsException notExistsException
+                = assertThrows(
+                Project.NotExistsException.class,
+                () -> projectService.modifyProject(new Member(), 1L, new NameDto())
+        );
+        stopWatch.stop();
+
+        // then
+        assertThat(notExistsException.getHttpStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+        printTime("프로젝트 수정 실패 테스트", stopWatch.getTotalTimeMillis());
+    }
+
+    @DisplayName("프로젝트 수정 성공 테스트")
+    @Test
+    void modifyProjectSuccess() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        Member member = new Member(1L, null, UserRole.MEMBER, "DGSW");
+        NameDto nameDto = new NameDto("끼리끼리");
+        Project project = new Project(1L, null, "Flock");
+        TeamMember teamMember = new TeamMember(null, member, Role.Leader);
+
+        lenient().when(projectRepository.findById(anyLong()))
+                .thenReturn(Optional.of(project));
+        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+                .thenReturn(Optional.of(teamMember));
+
+        // when
+        stopWatch.start();
+        LinkListDto linkListDto = projectService.modifyProject(member, 1L, nameDto);
+        stopWatch.stop();
+
+        // then
+        assertThat(linkListDto).isNotNull();
+        assertThat(project.getName()).isEqualTo(nameDto.getName());
+        printTime("프로젝트 수정 성공 테스트", stopWatch.getTotalTimeMillis());
     }
 }

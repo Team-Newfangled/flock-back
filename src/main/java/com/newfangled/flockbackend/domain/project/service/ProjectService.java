@@ -8,10 +8,15 @@ import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.domain.team.type.Role;
+import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.response.LinkDto;
+import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.embed.TeamId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -33,6 +38,24 @@ public class ProjectService {
 
     public void deleteProject(Member member, long projectId) {
         Project project = findById(projectId);
+        validateLeader(project, member, projectId);
+        projectRepository.delete(findById(projectId));
+    }
+
+    public LinkListDto modifyProject(Member member, long projectId,
+                                     NameDto nameDto) {
+        Project project = findById(projectId);
+        validateLeader(project, member, projectId);
+        project.updateName(nameDto.getName());
+        return new LinkListDto(
+                "팀명을 변경하였습니다.",
+                List.of(new LinkDto(
+                        "self", "GET", String.format("/projects/%d", project.getId())
+                ))
+        );
+    }
+
+    protected void validateLeader(Project project, Member member, long projectId) {
         Team team = project.getTeam();
         TeamMember teamMember = teamMemberRepository
                 .findByMember_IdAndTeamId(member.getId(), new TeamId(team))
@@ -40,15 +63,6 @@ public class ProjectService {
         if (teamMember.getRole() != Role.Leader) {
             throw new TeamMember.NoPermissionException();
         }
-
-        projectRepository.delete(findById(projectId));
     }
-
-//    public LinkListDto modifyProject(Member member, long projectId,
-//                                     NameDto nameDto) {
-//        // projectId 와 member 를 사용하여 정확하게 팀을 가져올 수 있는 가?
-//
-//
-//    }
 
 }
