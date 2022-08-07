@@ -1,9 +1,16 @@
 package com.newfangled.flockbackend.service.project;
 
+import com.newfangled.flockbackend.domain.member.entity.Member;
+import com.newfangled.flockbackend.domain.member.type.UserRole;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.project.service.ProjectService;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
+import com.newfangled.flockbackend.domain.team.entity.Team;
+import com.newfangled.flockbackend.domain.team.entity.TeamMember;
+import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
+import com.newfangled.flockbackend.domain.team.type.Role;
+import com.newfangled.flockbackend.global.embed.TeamId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -27,6 +34,9 @@ public class ProjectServiceTest {
 
     @Mock
     private ProjectRepository projectRepository;
+
+    @Mock
+    private TeamMemberRepository teamMemberRepository;
 
     @InjectMocks
     private ProjectService projectService;
@@ -92,7 +102,7 @@ public class ProjectServiceTest {
         Project.NotExistsException notExistsException
                 = assertThrows(
                 Project.NotExistsException.class,
-                () -> projectService.deleteProject(anyLong())
+                () -> projectService.deleteProject(new Member(), 1L)
         );
         stopWatch.stop();
 
@@ -106,14 +116,17 @@ public class ProjectServiceTest {
     void deleteProjectSuccess() {
         StopWatch stopWatch = new StopWatch();
         // given
+        Member member = new Member(1L, null, UserRole.MEMBER, "DGSW");
 
         doNothing().when(projectRepository).delete(any(Project.class));
         lenient().when(projectRepository.findById(anyLong()))
-                .thenReturn(Optional.of(new Project()));
+                .thenReturn(Optional.of(new Project(1L, new Team(), "Flock")));
+        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+                .thenReturn(Optional.of(new TeamMember(new TeamId(), member, Role.Leader)));
 
         // when
         stopWatch.start();
-        projectService.deleteProject(1L);
+        projectService.deleteProject(member, 1L);
         stopWatch.stop();
         
         // then

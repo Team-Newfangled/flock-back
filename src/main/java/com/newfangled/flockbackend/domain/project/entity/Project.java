@@ -1,5 +1,6 @@
 package com.newfangled.flockbackend.domain.project.entity;
 
+import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.global.embed.TeamId;
 import com.newfangled.flockbackend.global.exception.BusinessException;
 import lombok.AllArgsConstructor;
@@ -17,14 +18,14 @@ public class Project {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Embedded
-    private TeamId teamId;
+    @OneToOne
+    private Team team;
 
     @Column(name = "project_name")
     private String name;
 
-    public void setTeamId(TeamId teamId) {
-        this.teamId = teamId;
+    public void setTeam(Team team) {
+        this.team = team;
     }
 
     public static class NotExistsException extends BusinessException {
