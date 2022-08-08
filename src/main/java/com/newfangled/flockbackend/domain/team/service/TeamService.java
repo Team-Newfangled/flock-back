@@ -79,7 +79,7 @@ public class TeamService {
     public ProjectDto createProject(long id, NameDto nameDto) {
         Team team = findById(id);
         Project project = projectRepository
-                .save(new Project(1L, team, nameDto.getName()));
+                .save(new Project(1L, team, nameDto.getName(), null));
         return new ProjectDto(project);
     }
 

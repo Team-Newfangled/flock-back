@@ -24,12 +24,18 @@ public class Project {
     @Column(name = "project_name")
     private String name;
 
+    private String coverImage;
+
     public void setTeam(Team team) {
         this.team = team;
     }
 
     public void updateName(String name) {
         this.name = name;
+    }
+
+    public void updateCoverImg(String coverImage) {
+        this.coverImage = coverImage;
     }
 
     public static class NotExistsException extends BusinessException {

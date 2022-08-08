@@ -101,7 +101,7 @@ public class TeamServiceTest {
         StopWatch stopWatch = new StopWatch();
         // given
         Team team = new Team(1L, "NewFangled");
-        Project project = new Project(1L, team, "끼리끼리");
+        Project project = new Project(1L, team, "끼리끼리", null);
         Page<Project> projects = new PageImpl<>(List.of(project));
 
         lenient().when(teamRepository.findById(anyLong()))
@@ -187,7 +187,7 @@ public class TeamServiceTest {
         StopWatch stopWatch = new StopWatch();
         NameDto nameDto = new NameDto("Flock");
         Team team = new Team(1L, "NewFangled");
-        Project project = new Project(1L, team, nameDto.getName());
+        Project project = new Project(1L, team, nameDto.getName(), null);
 
         lenient().when(teamRepository.findById(anyLong()))
                 .thenReturn(Optional.of(team));

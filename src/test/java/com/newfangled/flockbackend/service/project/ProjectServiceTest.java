@@ -43,7 +43,6 @@ public class ProjectServiceTest {
     @InjectMocks
     private ProjectService projectService;
 
-
     private void printTime(String title, long time) {
         System.out.printf("'%s 서비스 소요 시간': %d ms%n", title, time);
     }
@@ -75,7 +74,7 @@ public class ProjectServiceTest {
     void findProjectSuccess() {
         StopWatch stopWatch = new StopWatch();
         // given
-        Project project = new Project(1L, null, "Flock");
+        Project project = new Project(1L, null, "Flock", null);
 
         lenient().when(projectRepository.findById(anyLong()))
                 .thenReturn(Optional.of(project));
@@ -122,7 +121,7 @@ public class ProjectServiceTest {
 
         doNothing().when(projectRepository).delete(any(Project.class));
         lenient().when(projectRepository.findById(anyLong()))
-                .thenReturn(Optional.of(new Project(1L, new Team(), "Flock")));
+                .thenReturn(Optional.of(new Project(1L, new Team(), "Flock", null)));
         lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
                 .thenReturn(Optional.of(new TeamMember(new TeamId(), member, Role.Leader)));
 
@@ -166,7 +165,7 @@ public class ProjectServiceTest {
         // given
         Member member = new Member(1L, null, UserRole.MEMBER, "DGSW");
         NameDto nameDto = new NameDto("끼리끼리");
-        Project project = new Project(1L, null, "Flock");
+        Project project = new Project(1L, null, "Flock", null);
         TeamMember teamMember = new TeamMember(null, member, Role.Leader);
 
         lenient().when(projectRepository.findById(anyLong()))
