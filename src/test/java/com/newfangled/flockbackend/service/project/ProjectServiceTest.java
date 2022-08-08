@@ -11,14 +11,17 @@ import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.embed.TeamId;
+import com.newfangled.flockbackend.global.infra.UriValidator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StopWatch;
@@ -39,6 +42,9 @@ public class ProjectServiceTest {
 
     @Mock
     private TeamMemberRepository teamMemberRepository;
+
+    @Spy
+    private UriValidator uriValidator;
 
     @InjectMocks
     private ProjectService projectService;
@@ -182,5 +188,59 @@ public class ProjectServiceTest {
         assertThat(linkListDto).isNotNull();
         assertThat(project.getName()).isEqualTo(nameDto.getName());
         printTime("프로젝트 수정 성공 테스트", stopWatch.getTotalTimeMillis());
+    }
+    
+    @DisplayName("프로젝트 커버 사진 수정 실패")
+    @Test
+    void modifyProjectCoverFailed() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        Member member = new Member(1L, null, UserRole.MEMBER, "DGSW");
+        Project project = new Project(1L, null, "Flock", null);
+
+        lenient().when(projectRepository.findById(anyLong()))
+                .thenReturn(Optional.of(project));
+        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+                .thenThrow(new TeamMember.NoPermissionException());
+
+        // when
+        stopWatch.start();
+        TeamMember.NoPermissionException noPermissionException
+                = assertThrows(
+                        TeamMember.NoPermissionException.class,
+                        () -> projectService.modifyProjectImg(member, 1L, new ContentDto("https://이미지.jpg"))
+        );
+        stopWatch.stop();
+
+        // then
+        assertThat(noPermissionException.getHttpStatus())
+                .isEqualTo(HttpStatus.FORBIDDEN);
+        printTime("프로젝트 커버 사진 수정 실패", stopWatch.getTotalTimeMillis());
+    }
+    
+    @DisplayName("프로젝트 커버 사진 수정 성공")
+    @Test
+    void modifyProjectCoverSuccess() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        Member member = new Member(1L, null, UserRole.MEMBER, "DGSW");
+        ContentDto contentDto = new ContentDto("https://이미지.jpg");
+        Project project = new Project(1L, null, "Flock", null);
+        TeamMember teamMember = new TeamMember(null, member, Role.Leader);
+
+        lenient().when(projectRepository.findById(anyLong()))
+                .thenReturn(Optional.of(project));
+        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+                .thenReturn(Optional.of(teamMember));
+
+        // when
+        stopWatch.start();
+        LinkListDto linkListDto = projectService.modifyProjectImg(member, 1L, contentDto);
+        stopWatch.stop();
+
+        // then
+        assertThat(linkListDto).isNotNull();
+        assertThat(project.getCoverImage()).isEqualTo(contentDto.getContent());
+        printTime("프로젝트 커버 사진 수정 성공", stopWatch.getTotalTimeMillis());
     }
 }

@@ -13,8 +13,10 @@ import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.embed.TeamId;
+import com.newfangled.flockbackend.global.exception.BusinessException;
 import com.newfangled.flockbackend.global.infra.UriValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +62,11 @@ public class ProjectService {
 
     public LinkListDto modifyProjectImg(Member member, long projectId,
                                         ContentDto contentDto) {
+        String pictureURI = contentDto.getContent();
+        if (!uriValidator.isUri(pictureURI)) {
+            throw new BusinessException(HttpStatus.CONFLICT, "유효하지 않는 URI 입니다.");
+        }
+
         Project project = findById(projectId);
         validateLeader(project, member);
         project.updateCoverImg(contentDto.getContent());
