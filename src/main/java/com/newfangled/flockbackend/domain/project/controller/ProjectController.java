@@ -3,6 +3,8 @@ package com.newfangled.flockbackend.domain.project.controller;
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.project.service.ProjectService;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
+import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -26,4 +28,15 @@ public class ProjectController {
                               @PathVariable("id") long id) {
         projectService.deleteProject((Member) authentication.getPrincipal(), id);
     }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public LinkListDto modifyProjectName(Authentication authentication,
+                                         @PathVariable("id") long id,
+                                         @RequestBody final NameDto nameDto) {
+        return projectService.modifyProject(
+                (Member) authentication.getPrincipal(), id, nameDto
+        );
+    }
+
 }

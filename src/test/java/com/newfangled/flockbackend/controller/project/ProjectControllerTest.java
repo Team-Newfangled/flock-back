@@ -15,6 +15,9 @@ import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.domain.team.service.TeamService;
 import com.newfangled.flockbackend.global.config.jwt.JwtConfiguration;
+import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.response.LinkDto;
+import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +36,8 @@ import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -169,5 +174,56 @@ public class ProjectControllerTest {
         // then
         resultActions.andDo(print())
                 .andExpect(status().isNoContent());
+    }
+
+    @DisplayName("프로젝트명 수정 실패")
+    @Test
+    void modifyProjectNameFailed() throws Exception {
+        // given
+        Member member = member();
+        String content = objectMapper.writeValueAsString(new NameDto());
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().when(projectService.modifyProject(
+                any(Member.class), anyLong(), any(NameDto.class))
+        ).thenThrow(new TeamMember.NoPermissionException());
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/projects/1",
+                content, "patch", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isForbidden());
+    }
+    
+    @DisplayName("프로젝트명 수정 성공")
+    @Test
+    void modifyProjectNameSuccess() throws Exception {
+        // given
+        Member member = member();
+        LinkDto linkDto = new LinkDto("self", "GET", "/projects/1");
+        LinkListDto linkListDto
+                = new LinkListDto("팀명을 변경하였습니다.", List.of(linkDto)
+        );
+        NameDto nameDto = new NameDto("끼리끼리");
+        String content = objectMapper.writeValueAsString(nameDto);
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().when(projectService.modifyProject(
+                any(Member.class), anyLong(), any(NameDto.class))
+        ).thenReturn(linkListDto);
+    
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/projects/1",
+                content, "patch", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+        
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isCreated());
     }
 }
