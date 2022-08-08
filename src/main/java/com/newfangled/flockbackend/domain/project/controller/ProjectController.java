@@ -4,6 +4,7 @@ import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.project.service.ProjectService;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,4 +40,13 @@ public class ProjectController {
         );
     }
 
+    @PatchMapping("/{id}/image")
+    @ResponseStatus(HttpStatus.CREATED)
+    public LinkListDto modifyProjectCoverImage(Authentication authentication,
+                                               @PathVariable("id") long id,
+                                               @RequestBody final ContentDto contentDto) {
+        return projectService.modifyProjectImg(
+                (Member) authentication.getPrincipal(), id, contentDto
+        );
+    }
 }

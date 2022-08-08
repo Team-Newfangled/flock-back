@@ -11,13 +11,18 @@ import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.project.service.ProjectService;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
+import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.domain.team.service.TeamService;
+import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.config.jwt.JwtConfiguration;
 import com.newfangled.flockbackend.global.dto.NameDto;
+import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
+import com.newfangled.flockbackend.global.embed.TeamId;
+import com.newfangled.flockbackend.global.infra.UriValidator;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -80,6 +85,9 @@ public class ProjectControllerTest {
 
     @MockBean
     private ProjectRepository projectRepository;
+
+    @SpyBean
+    private UriValidator uriValidator;
 
     private Member member() {
         return Member.builder()
@@ -219,6 +227,57 @@ public class ProjectControllerTest {
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
                 mockMvc, "/projects/1",
+                content, "patch", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+        
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isCreated());
+    }
+
+    @DisplayName("프로젝트 커버 사진 수정 실패")
+    @Test
+    void modifyProjectCoverFailed() throws Exception {
+        // given
+        Member member = member();
+        String content = objectMapper
+                .writeValueAsString(new ContentDto("https://image.jpg"));
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().when(projectService.modifyProjectImg(
+                any(Member.class), anyLong(), any(ContentDto.class))
+        ).thenThrow(new TeamMember.NoPermissionException());
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/projects/1/image",
+                content, "patch", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @DisplayName("프로젝트 커버 사진 수정 성공")
+    @Test
+    void modifyProjectCoverSuccess() throws Exception {
+        // given
+        Member member = member();
+        Team team = new Team(1L, "NewFangled");
+        Project project = new Project(1L, null, "Flock", null);
+        TeamMember teamMember = new TeamMember(new TeamId(team), member, Role.Leader);
+        ContentDto contentDto = new ContentDto("https://image.png");
+        String content = objectMapper.writeValueAsString(contentDto);
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().when(projectService.modifyProjectImg(
+                any(Member.class), anyLong(), any(ContentDto.class))
+        ).thenReturn(new LinkListDto("프로젝트의 커버 사진을 변경하였습니다.", List.of(new LinkDto())));
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/projects/1/image",
                 content, "patch", ControllerTestUtil.getAccessToken(jwtTokenProvider)
         );
         
