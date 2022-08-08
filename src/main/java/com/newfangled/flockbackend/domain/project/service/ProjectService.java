@@ -38,14 +38,14 @@ public class ProjectService {
 
     public void deleteProject(Member member, long projectId) {
         Project project = findById(projectId);
-        validateLeader(project, member, projectId);
+        validateLeader(project, member);
         projectRepository.delete(findById(projectId));
     }
 
     public LinkListDto modifyProject(Member member, long projectId,
                                      NameDto nameDto) {
         Project project = findById(projectId);
-        validateLeader(project, member, projectId);
+        validateLeader(project, member);
         project.updateName(nameDto.getName());
         return new LinkListDto(
                 "팀명을 변경하였습니다.",
@@ -55,7 +55,8 @@ public class ProjectService {
         );
     }
 
-    protected void validateLeader(Project project, Member member, long projectId) {
+    @Transactional(readOnly = true)
+    protected void validateLeader(Project project, Member member) {
         Team team = project.getTeam();
         TeamMember teamMember = teamMemberRepository
                 .findByMember_IdAndTeamId(member.getId(), new TeamId(team))

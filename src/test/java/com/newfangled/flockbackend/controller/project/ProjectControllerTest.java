@@ -11,6 +11,7 @@ import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.project.service.ProjectService;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
+import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.domain.team.service.TeamService;
 import com.newfangled.flockbackend.global.config.jwt.JwtConfiguration;
@@ -33,6 +34,7 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.lenient;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -125,5 +127,47 @@ public class ProjectControllerTest {
         // then
         resultActions.andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @DisplayName("프로젝트 삭제 실패")
+    @Test
+    void deleteProjectFailed() throws Exception {
+        // given
+        Member member = member();
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().doThrow(new TeamMember.NoPermissionException())
+                .when(projectService).deleteProject(any(Member.class), anyLong());
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/projects/1",
+                null, "delete", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+        
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isForbidden());
+    }
+
+    @DisplayName("프로젝트 삭제 성공")
+    @Test
+    void deleteProjectSuccess() throws Exception {
+        // given
+        Member member = member();
+
+        ControllerTestUtil.authenticateStumpMember(member, memberRepository);
+        lenient().doNothing().when(projectService)
+                .deleteProject(any(Member.class), anyLong());
+
+        // when
+        ResultActions resultActions = ControllerTestUtil.resultActions(
+                mockMvc, "/projects/1",
+                null, "delete", ControllerTestUtil.getAccessToken(jwtTokenProvider)
+        );
+        
+        // then
+        resultActions.andDo(print())
+                .andExpect(status().isNoContent());
     }
 }
