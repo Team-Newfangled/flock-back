@@ -36,7 +36,7 @@ public class TeamMember {
 
     public static class NoPermissionException extends BusinessException {
         public NoPermissionException() {
-            super(HttpStatus.FORBIDDEN, "퇴출시킬 수 있는 권한이 없습니다.");
+            super(HttpStatus.FORBIDDEN, "접근할 수 있는 권한이 없습니다.");
         }
     }
 

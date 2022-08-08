@@ -3,7 +3,6 @@ package com.newfangled.flockbackend.domain.team.dto.response;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor

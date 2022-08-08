@@ -52,16 +52,16 @@ public class TeamService {
     }
 
     public void expulsionMember(Member member, long id, long userId) {
-        Team team = findById(id);
+        TeamId teamId = getTeamId(findById(id));
         TeamMember leader = teamMemberRepository
-                .findByMember_IdAndTeamId_Id(member.getId(), team.getId())
+                .findByMember_IdAndTeamId(member.getId(), teamId)
                 .orElseThrow(TeamMember.NoPermissionException::new);
         if (leader.getRole() != Role.Leader) {
             throw new TeamMember.NoPermissionException();
         }
 
         TeamMember teamMember = teamMemberRepository
-                .findByMember_IdAndTeamId_Id(userId, team.getId())
+                .findByMember_IdAndTeamId(userId, teamId)
                 .orElseThrow(TeamMember.NoMemberException::new);
         teamMemberRepository.delete(teamMember);
     }
@@ -77,9 +77,9 @@ public class TeamService {
     }
 
     public ProjectDto createProject(long id, NameDto nameDto) {
-        TeamId teamId = getTeamId(findById(id));
+        Team team = findById(id);
         Project project = projectRepository
-                .save(new Project(null, teamId, nameDto.getName()));
+                .save(new Project(1L, team, nameDto.getName(), null));
         return new ProjectDto(project);
     }
 
