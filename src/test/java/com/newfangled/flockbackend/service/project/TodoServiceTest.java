@@ -138,6 +138,41 @@ public class TodoServiceTest {
         assertThat(todoDto.getContent()).isEqualTo(contentDto.getContent());
         printTime("할 일 작성 성공", stopWatch.getTotalTimeMillis());
     }
+
+    @DisplayName("할 일 수정 실패")
+    @Test
+    void modifyTodoFailed() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        Member member = member();
+        Project project = new Project(1L, null, "Flock", null);
+        Todo todo = new Todo(
+                1L, new TodoId(project, todoDetail(null, "서비스 추가"))
+        );
+        TodoModifyDto todoModifyDto
+                = new TodoModifyDto("할 일 서비스 추가", null, null);
+
+        lenient().when(todoRepository.findById(anyLong()))
+                .thenReturn(Optional.of(todo));
+        lenient().when(
+                teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class))
+        ).thenThrow(new TeamMember.NoPermissionException());
+
+        // when
+        stopWatch.start();
+        final TeamMember.NoPermissionException noPermissionException
+                = assertThrows(
+                        TeamMember.NoPermissionException.class,
+                        () -> todoService.modifyTodo(member, 1L, todoModifyDto)
+        );
+        stopWatch.stop();
+
+        // then
+        assertThat(noPermissionException.getHttpStatus())
+                .isEqualTo(HttpStatus.FORBIDDEN);
+        printTime("할 일 수정 실패", stopWatch.getTotalTimeMillis());
+    }
+
     
     @DisplayName("할 일 수정 성공")
     @Test
