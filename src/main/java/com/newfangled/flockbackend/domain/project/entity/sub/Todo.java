@@ -22,6 +22,10 @@ public class Todo {
 
     private boolean completed;
 
+    public void setCompleted() {
+        this.completed = true;
+    }
+
     public static class NotExistsException extends BusinessException {
         public NotExistsException() {
             super(HttpStatus.NOT_FOUND, "존재하지 않는 할 일 입니다.");

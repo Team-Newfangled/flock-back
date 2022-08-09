@@ -239,4 +239,35 @@ public class TodoServiceTest {
         verify(todoRepository, times(1)).delete(any(Todo.class));
     }
     
+    @DisplayName("할 일 완료 성공")
+    @Test
+    void completeTodoSuccess() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        Member member = member();
+        Project project = new Project(1L, null, "Flock", null);
+        TeamMember teamMember = new TeamMember(null, member, Role.Member);
+        Todo todo = new Todo(
+                1L,
+                new TodoId(project, todoDetail(teamMember, "할 일 삭제 기능")),
+                false
+        );
+
+        lenient().when(todoRepository.findById(anyLong()))
+                .thenReturn(Optional.of(todo));
+        lenient().when(
+                teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class))
+        ).thenReturn(Optional.of(teamMember));
+    
+        // when
+        stopWatch.start();
+        todoService.completeTodo(member, 1L);
+        stopWatch.stop();
+
+        // then
+        assertThat(todo.isCompleted()).isTrue();
+        printTime("할 일 완료 성공", stopWatch.getTotalTimeMillis());
+    }
+    
+    
 }

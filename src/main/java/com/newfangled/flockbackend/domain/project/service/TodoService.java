@@ -79,6 +79,17 @@ public class TodoService {
         todoRepository.delete(todo);
     }
 
+    public LinkListDto completeTodo(Member member, long todoId) {
+        Todo todo = findById(todoId);
+        Project project = todo.getTodoId().getProject();
+        validateMember(project, member);
+        todo.setCompleted();
+        return new LinkListDto(
+                "할 일을 수정했습니다.",
+                List.of(new LinkDto("self", "GET", String.format("/todo/%d", todoId)))
+        );
+    }
+
     @Transactional(readOnly = true)
     protected Project findProjectById(long id) {
         return projectRepository.findById(id)
