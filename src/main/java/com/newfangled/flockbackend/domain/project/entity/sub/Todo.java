@@ -12,7 +12,10 @@ import javax.persistence.*;
 @Entity
 public class Todo {
 
-    @EmbeddedId
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Embedded
     private TodoId todoId;
 
 }
