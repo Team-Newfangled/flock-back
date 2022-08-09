@@ -118,7 +118,8 @@ public class TodoServiceTest {
         TeamMember teamMember = new TeamMember(null, member, Role.ForeignMember);
         Todo todo = new Todo(
                 1L,
-                new TodoId(project, todoDetail(teamMember, contentDto.getContent()))
+                new TodoId(project, todoDetail(teamMember, contentDto.getContent())),
+                false
         );
 
         lenient().when(projectRepository.findById(anyLong()))
@@ -147,7 +148,7 @@ public class TodoServiceTest {
         Member member = member();
         Project project = new Project(1L, null, "Flock", null);
         Todo todo = new Todo(
-                1L, new TodoId(project, todoDetail(null, "서비스 추가"))
+                1L, new TodoId(project, todoDetail(null, "서비스 추가")), false
         );
         TodoModifyDto todoModifyDto
                 = new TodoModifyDto("할 일 서비스 추가", null, null);
@@ -182,7 +183,7 @@ public class TodoServiceTest {
         Project project = new Project(1L, null, "Flock", null);
         TeamMember teamMember = new TeamMember(null, member, Role.Member);
         Todo todo = new Todo(
-                1L, new TodoId(project, todoDetail(teamMember, "궔 서비스 추가"))
+                1L, new TodoId(project, todoDetail(teamMember, "궔 서비스 추가")), false
         );
         TodoModifyDto todoModifyDto
                 = new TodoModifyDto("할 일 서비스 추가", null, null);
@@ -216,7 +217,8 @@ public class TodoServiceTest {
         TeamMember teamMember = new TeamMember(null, member, Role.Member);
         Todo todo = new Todo(
                 1L,
-                new TodoId(project, todoDetail(teamMember, "할 일 삭제 기능"))
+                new TodoId(project, todoDetail(teamMember, "할 일 삭제 기능")),
+                false
         );
 
         lenient().when(todoRepository.findById(anyLong()))

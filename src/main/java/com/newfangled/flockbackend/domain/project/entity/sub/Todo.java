@@ -20,6 +20,8 @@ public class Todo {
     @Embedded
     private TodoId todoId;
 
+    private boolean completed;
+
     public static class NotExistsException extends BusinessException {
         public NotExistsException() {
             super(HttpStatus.NOT_FOUND, "존재하지 않는 할 일 입니다.");

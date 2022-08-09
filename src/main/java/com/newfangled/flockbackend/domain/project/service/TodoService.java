@@ -47,7 +47,8 @@ public class TodoService {
                             null,
                             null
                     )
-                )
+                ),
+                false
         );
 
         return new TodoDto(todoRepository.save(todo));
