@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -172,7 +172,6 @@ public class TodoServiceTest {
                 .isEqualTo(HttpStatus.FORBIDDEN);
         printTime("할 일 수정 실패", stopWatch.getTotalTimeMillis());
     }
-
     
     @DisplayName("할 일 수정 성공")
     @Test
@@ -206,4 +205,36 @@ public class TodoServiceTest {
                 .isEqualTo(todoModifyDto.getContent());
         printTime("할 일 수정 성공", stopWatch.getTotalTimeMillis());
     }
+    
+    @DisplayName("할 일 삭제 성공")
+    @Test
+    void deleteTodoSuccess() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        Member member = member();
+        Project project = new Project(1L, null, "Flock", null);
+        TeamMember teamMember = new TeamMember(null, member, Role.Member);
+        Todo todo = new Todo(
+                1L,
+                new TodoId(project, todoDetail(teamMember, "할 일 삭제 기능"))
+        );
+
+        lenient().when(todoRepository.findById(anyLong()))
+                .thenReturn(Optional.of(todo));
+        lenient().when(
+                teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class))
+        ).thenReturn(Optional.of(teamMember));
+    
+        // when
+        stopWatch.start();
+        todoService.deleteTodo(member, 1L);
+        stopWatch.stop();
+        
+        // then
+        printTime("할 일 삭제 성공", stopWatch.getTotalTimeMillis());
+
+        // verify
+        verify(todoRepository, times(1)).delete(any(Todo.class));
+    }
+    
 }

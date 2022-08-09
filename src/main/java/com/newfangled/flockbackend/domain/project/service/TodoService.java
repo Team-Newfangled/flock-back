@@ -12,7 +12,6 @@ import com.newfangled.flockbackend.domain.project.repository.TodoRepository;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
-import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
@@ -70,6 +69,13 @@ public class TodoService {
                 "할 일을 수정했습니다.",
                 List.of(new LinkDto("self", "GET", String.format("/todo/%d", todoId)))
         );
+    }
+    
+    public void deleteTodo(Member member, long todoId) {
+        Todo todo = findById(todoId);
+        Project project = todo.getTodoId().getProject();
+        validateMember(project, member);
+        todoRepository.delete(todo);
     }
 
     @Transactional(readOnly = true)
