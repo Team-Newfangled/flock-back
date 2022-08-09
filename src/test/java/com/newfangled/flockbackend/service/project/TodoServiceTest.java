@@ -2,6 +2,7 @@ package com.newfangled.flockbackend.service.project;
 
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.member.type.UserRole;
+import com.newfangled.flockbackend.domain.project.dto.request.TodoModifyDto;
 import com.newfangled.flockbackend.domain.project.dto.response.TodoDto;
 import com.newfangled.flockbackend.domain.project.embed.TodoId;
 import com.newfangled.flockbackend.domain.project.entity.Project;
@@ -14,6 +15,7 @@ import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
+import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.embed.TeamId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -137,6 +139,36 @@ public class TodoServiceTest {
         printTime("할 일 작성 성공", stopWatch.getTotalTimeMillis());
     }
     
+    @DisplayName("할 일 수정 성공")
+    @Test
+    void modifyTodoSuccess() {
+        StopWatch stopWatch = new StopWatch();
+        // given
+        Member member = member();
+        Project project = new Project(1L, null, "Flock", null);
+        TeamMember teamMember = new TeamMember(null, member, Role.Member);
+        Todo todo = new Todo(
+                1L, new TodoId(project, todoDetail(teamMember, "궔 서비스 추가"))
+        );
+        TodoModifyDto todoModifyDto
+                = new TodoModifyDto("할 일 서비스 추가", null, null);
 
+        lenient().when(todoRepository.findById(anyLong()))
+                .thenReturn(Optional.of(todo));
+        lenient().when(
+                teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class))
+        ).thenReturn(Optional.of(teamMember));
 
+        // when
+        stopWatch.start();
+        final LinkListDto linkListDto
+                = todoService.modifyTodo(member, 1L, todoModifyDto);
+        stopWatch.stop();
+
+        // then
+        assertThat(linkListDto).isNotNull();
+        assertThat(todo.getTodoId().getTodoDetail().getContent())
+                .isEqualTo(todoModifyDto.getContent());
+        printTime("할 일 수정 성공", stopWatch.getTotalTimeMillis());
+    }
 }

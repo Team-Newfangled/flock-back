@@ -1,9 +1,11 @@
 package com.newfangled.flockbackend.domain.project.entity.sub;
 
 import com.newfangled.flockbackend.domain.project.embed.TodoId;
+import com.newfangled.flockbackend.global.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
 
@@ -17,5 +19,11 @@ public class Todo {
 
     @Embedded
     private TodoId todoId;
+
+    public static class NotExistsException extends BusinessException {
+        public NotExistsException() {
+            super(HttpStatus.NOT_FOUND, "존재하지 않는 할 일 입니다.");
+        }
+    }
 
 }

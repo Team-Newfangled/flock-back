@@ -29,4 +29,10 @@ public class TodoDetail {
 
     private LocalDate endDate;
 
+    public void modifyDetail(String content, LocalDate startDate,
+                             LocalDate endDate) {
+        this.content = content;
+        this.startDate = (startDate == null) ? this.startDate : startDate;
+        this.endDate = (endDate == null) ? this.endDate : endDate;
+    }
 }
