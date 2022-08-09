@@ -42,9 +42,9 @@ public class TeamService {
     }
 
     public PageDto<ProjectDto> findAllTeamProjects(long teamId, int page) {
-        TeamId team = getTeamId(findById(teamId));
+        Team team = findById(teamId);
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        Page<ProjectDto> teamProjects = new PageImpl<>(projectRepository.findAllByTeamId(team, pageable)
+        Page<ProjectDto> teamProjects = new PageImpl<>(projectRepository.findAllByTeam(team, pageable)
                 .stream()
                 .map(ProjectDto::new)
                 .collect(Collectors.toList()));
