@@ -4,7 +4,9 @@ import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -24,7 +26,7 @@ public class TodoDetail {
 
     private String color;
 
-    @CreatedDate
+    @CreationTimestamp
     private LocalDate startDate;
 
     private LocalDate endDate;

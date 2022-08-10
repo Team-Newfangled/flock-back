@@ -9,6 +9,7 @@ import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.entity.sub.Todo;
 import com.newfangled.flockbackend.domain.project.entity.sub.TodoDetail;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
+import com.newfangled.flockbackend.domain.project.repository.TodoDetailRepository;
 import com.newfangled.flockbackend.domain.project.repository.TodoRepository;
 import com.newfangled.flockbackend.domain.project.service.TodoService;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
@@ -48,6 +49,9 @@ public class TodoServiceTest {
 
     @Mock
     private TodoRepository todoRepository;
+
+    @Mock
+    private TodoDetailRepository todoDetailRepository;
 
     @InjectMocks
     private TodoService todoService;

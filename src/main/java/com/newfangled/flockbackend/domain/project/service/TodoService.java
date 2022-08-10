@@ -8,6 +8,7 @@ import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.entity.sub.Todo;
 import com.newfangled.flockbackend.domain.project.entity.sub.TodoDetail;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
+import com.newfangled.flockbackend.domain.project.repository.TodoDetailRepository;
 import com.newfangled.flockbackend.domain.project.repository.TodoRepository;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
@@ -15,13 +16,19 @@ import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
+import com.newfangled.flockbackend.global.dto.response.PageDto;
 import com.newfangled.flockbackend.global.embed.TeamId;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,22 +38,25 @@ public class TodoService {
     private final TeamMemberRepository teamMemberRepository;
     private final ProjectRepository projectRepository;
     private final TodoRepository todoRepository;
+    private final TodoDetailRepository todoDetailRepository;
 
     public TodoDto writeTodo(Member member, long projectId, ContentDto contentDto) {
         Project project = findProjectById(projectId);
         TeamMember teamMember = validateMember(project, member);
+        TodoDetail todoDetail = new TodoDetail(
+                null,
+                teamMember,
+                contentDto.getContent(),
+                getRandomHexColor(),
+                null,
+                null
+        );
+        TodoDetail savedDetail = todoDetailRepository.save(todoDetail);
+
         Todo todo = new Todo(
                 null,
                 new TodoId(
-                    project,
-                    new TodoDetail(
-                            null,
-                            teamMember,
-                            contentDto.getContent(),
-                            getRandomHexColor(),
-                            null,
-                            null
-                    )
+                    project, savedDetail
                 ),
                 false
         );
@@ -85,9 +95,26 @@ public class TodoService {
         validateMember(project, member);
         todo.setCompleted();
         return new LinkListDto(
-                "할 일을 수정했습니다.",
+                "할 일을 완료했습니다.",
                 List.of(new LinkDto("self", "GET", String.format("/todo/%d", todoId)))
         );
+    }
+
+    public PageDto<TodoDto> findAllTodos(Member member, long projectId,
+                                   long userId, int page) {
+        Project project = findProjectById(projectId);
+        validateMember(project, member);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        Page<Todo> todos = todoRepository.findAllByTodoId_ProjectAndTodoId_TodoDetail_TeamMember_Member_Id(project, userId, pageable);
+        return new PageDto<>(
+                todos.getNumber(),
+                todos.getTotalPages(),
+                todos.stream().map(TodoDto::new).collect(Collectors.toList())
+        );
+    }
+
+    public TodoDto findTodo(long todoId) {
+        return new TodoDto(findById(todoId));
     }
 
     @Transactional(readOnly = true)
