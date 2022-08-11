@@ -2,9 +2,11 @@ package com.newfangled.flockbackend.domain.project.entity.sub;
 
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
+import com.newfangled.flockbackend.global.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
 
@@ -25,5 +27,19 @@ public class Board {
     private String content;
 
     private String file;
+
+    public void modifyContent(String content) {
+        this.content = content;
+    }
+
+    public void updateFile(String file) {
+        this.file = file;
+    }
+
+    public static class NotExistsException extends BusinessException {
+        public NotExistsException() {
+            super(HttpStatus.NOT_FOUND, "피드를 찾지 못하였습니다.");
+        }
+    }
 
 }

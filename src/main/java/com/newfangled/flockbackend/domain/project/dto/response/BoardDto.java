@@ -1,6 +1,7 @@
 package com.newfangled.flockbackend.domain.project.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.newfangled.flockbackend.domain.project.entity.sub.Board;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,12 +15,16 @@ public class BoardDto {
     private long id;
     private String content;
 
-    @JsonProperty("board-id")
-    private long boardId;
-
     @JsonProperty("writer-id")
     private long writerId;
 
-    private List<FileDto> files;
+    private String file;
+
+    public BoardDto(Board board) {
+        this.id = board.getId();
+        this.content = board.getContent();
+        this.writerId = board.getTeamMember().getMember().getId();
+        this.file = board.getFile();
+    }
 
 }
