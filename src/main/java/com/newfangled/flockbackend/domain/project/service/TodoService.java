@@ -3,6 +3,7 @@ package com.newfangled.flockbackend.domain.project.service;
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.project.dto.request.TodoModifyDto;
 import com.newfangled.flockbackend.domain.project.dto.response.TodoDto;
+import com.newfangled.flockbackend.domain.project.embed.DetailId;
 import com.newfangled.flockbackend.domain.project.embed.TodoId;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.entity.sub.Todo;
@@ -26,6 +27,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
@@ -43,25 +45,26 @@ public class TodoService {
     public TodoDto writeTodo(Member member, long projectId, ContentDto contentDto) {
         Project project = findProjectById(projectId);
         TeamMember teamMember = validateMember(project, member);
-        TodoDetail todoDetail = new TodoDetail(
-                null,
-                teamMember,
-                contentDto.getContent(),
-                getRandomHexColor(),
-                null,
-                null
-        );
-        TodoDetail savedDetail = todoDetailRepository.save(todoDetail);
 
         Todo todo = new Todo(
                 null,
-                new TodoId(
-                    project, savedDetail
-                ),
+                null,
                 false
         );
+        Todo savedTodo = todoRepository.save(todo);
 
-        return new TodoDto(todoRepository.save(todo));
+        TodoDetail todoDetail = new TodoDetail(
+                new DetailId(todo),
+                teamMember,
+                contentDto.getContent(),
+                getRandomHexColor(),
+                LocalDate.now(),
+                null
+        );
+        TodoDetail savedDetail = todoDetailRepository.save(todoDetail);
+        todo.setTodoId(new TodoId(project, savedDetail));
+
+        return new TodoDto(savedTodo);
     }
 
     public LinkListDto modifyTodo(Member member, long todoId,

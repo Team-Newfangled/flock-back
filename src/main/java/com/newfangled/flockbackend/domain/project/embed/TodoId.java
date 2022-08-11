@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import java.io.Serializable;
@@ -17,10 +18,10 @@ import java.io.Serializable;
 @AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TodoId implements Serializable {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Project project;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private TodoDetail todoDetail;
 
 }

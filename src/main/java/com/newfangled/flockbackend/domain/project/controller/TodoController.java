@@ -3,19 +3,24 @@ package com.newfangled.flockbackend.domain.project.controller;
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.project.dto.request.TodoModifyDto;
 import com.newfangled.flockbackend.domain.project.dto.response.TodoDto;
+import com.newfangled.flockbackend.domain.project.service.TodoDetailService;
 import com.newfangled.flockbackend.domain.project.service.TodoService;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.dto.response.PageDto;
+import com.newfangled.flockbackend.global.dto.response.ResultListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
 public class TodoController {
 
     private final TodoService todoService;
+    private final TodoDetailService todoDetailService;
 
     @PostMapping("/projects/{id}/todo")
     public TodoDto createTodo(Authentication authentication,
@@ -60,5 +65,25 @@ public class TodoController {
     @GetMapping("/todo/{id}")
     public TodoDto findTodo(@PathVariable("id") long id) {
         return todoService.findTodo(id);
+    }
+
+    @PatchMapping("/projects/{project-id}/deadline/{todo-id}")
+    public LinkListDto modifyColor(Authentication authentication,
+                                   @PathVariable("project-id") long projectId,
+                                   @PathVariable("todo-id") long todoId,
+                                   @RequestBody @Valid ContentDto contentDto) {
+        return todoDetailService.modifyColor(
+                (Member) authentication.getPrincipal(),
+                projectId,
+                todoId,
+                contentDto
+        );
+    }
+
+    @GetMapping("/projects/{id}/deadline")
+    public ResultListDto<TodoDto> findDeadlines(@PathVariable("id") long id,
+                                                @RequestParam int year,
+                                                @RequestParam int month) {
+        return todoDetailService.findDetails(id, year, month);
     }
 }

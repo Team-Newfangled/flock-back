@@ -81,7 +81,7 @@ public class TodoServiceTest {
     }
 
     private TodoDetail todoDetail(TeamMember teamMember, String content) {
-        return new TodoDetail(1L, teamMember, content, getRandomHexColor(), null, null);
+        return new TodoDetail(null, teamMember, content, getRandomHexColor(), null, null);
     }
 
     @DisplayName("할 일 작성 실패")
