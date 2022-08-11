@@ -3,7 +3,6 @@ package com.newfangled.flockbackend.global.security;
 import com.newfangled.flockbackend.global.jwt.filter.JwtTokenFilter;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;

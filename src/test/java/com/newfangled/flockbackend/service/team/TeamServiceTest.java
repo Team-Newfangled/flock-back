@@ -106,7 +106,7 @@ public class TeamServiceTest {
 
         lenient().when(teamRepository.findById(anyLong()))
                         .thenReturn(Optional.of(team));
-        lenient().when(projectRepository.findAllByTeamId(any(TeamId.class), any()))
+            lenient().when(projectRepository.findAllByTeam(any(Team.class), any()))
                 .thenReturn(projects);
 
         // when

@@ -14,7 +14,6 @@ import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
-import com.newfangled.flockbackend.domain.team.service.TeamService;
 import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.config.jwt.JwtConfiguration;
 import com.newfangled.flockbackend.global.dto.NameDto;

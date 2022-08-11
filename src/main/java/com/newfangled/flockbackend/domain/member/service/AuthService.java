@@ -51,7 +51,7 @@ public class AuthService {
                 .orElseGet(() -> joinOAuthUser(userInfoResponse));
 
         return new OAuthResponseDto(
-                jwtTokenProvider.generateRefreshToken(account.getUsername())
+                jwtTokenProvider.generateAccessToken(account.getUsername())
         );
     }
 

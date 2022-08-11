@@ -5,25 +5,25 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.lang.Nullable;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
 @AllArgsConstructor @NoArgsConstructor
 public class TodoModifyDto {
 
-    @NotNull
+    @Nullable
     private String content;
 
     @JsonProperty("start-date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @NotNull
+    @Nullable
     private LocalDate startDate;
 
     @JsonProperty("end-date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @NotNull
+    @Nullable
     private LocalDate endDate;
 
 }
