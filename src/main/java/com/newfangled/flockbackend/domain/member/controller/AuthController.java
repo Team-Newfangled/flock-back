@@ -23,13 +23,10 @@ public class AuthController {
         return authService.oAuthGoogle(code);
     }
 
-    @GetMapping("/refresh")
+    @PostMapping("/refresh")
     public TokenRefreshResponse refreshToken(
-            @RequestBody @Valid TokenRefreshRequest tokenRefreshRequest,
-            Authentication authentication
+            @RequestBody @Valid final TokenRefreshRequest tokenRefreshRequest
     ) {
-        return authService.refreshToken(
-                (Member) authentication.getPrincipal(), tokenRefreshRequest
-        );
+        return authService.refreshToken(tokenRefreshRequest);
     }
 }

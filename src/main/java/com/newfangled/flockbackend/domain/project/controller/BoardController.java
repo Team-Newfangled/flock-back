@@ -2,6 +2,8 @@ package com.newfangled.flockbackend.domain.project.controller;
 
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.project.dto.response.BoardDto;
+import com.newfangled.flockbackend.domain.project.dto.response.CommentDto;
+import com.newfangled.flockbackend.domain.project.service.BoardCommentService;
 import com.newfangled.flockbackend.domain.project.service.BoardService;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
@@ -18,6 +20,7 @@ import javax.validation.Valid;
 public class BoardController {
 
     private final BoardService boardService;
+    private final BoardCommentService boardCommentService;
 
     @PostMapping("/boards/{id}/files")
     @ResponseStatus(HttpStatus.CREATED)
@@ -75,5 +78,32 @@ public class BoardController {
     public LinkListDto deleteFile(Authentication authentication,
                                   @PathVariable("id") long id) {
         return boardService.deleteFile((Member) authentication.getPrincipal(), id);
+    }
+
+    @PostMapping("/board/{id}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    public CommentDto writeComment(Authentication authentication,
+                                   @PathVariable("id") long id,
+                                   @RequestBody @Valid final ContentDto contentDto) {
+        return boardCommentService.writeComment(
+                (Member) authentication.getPrincipal(),
+                id, contentDto
+        );
+    }
+
+    @GetMapping("/board/{id}/comments")
+    public PageDto<CommentDto> findCommentPage(@PathVariable("id") long id,
+                                               @RequestParam int page) {
+        return boardCommentService.findAllComments(id, page);
+    }
+
+    @DeleteMapping("/comments/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteComment(Authentication authentication,
+                              @PathVariable("id") long id) {
+        boardCommentService.deleteComment(
+                (Member) authentication.getPrincipal(),
+                id
+        );
     }
 }
