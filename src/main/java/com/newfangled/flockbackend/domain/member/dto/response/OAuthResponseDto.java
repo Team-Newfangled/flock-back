@@ -11,6 +11,10 @@ import javax.validation.constraints.NotNull;
 public class OAuthResponseDto {
 
     @NotNull
+    @JsonProperty(value = "access_token")
+    private String accessToken;
+
+    @NotNull
     @JsonProperty(value = "refresh_token")
     private String refreshToken;
 

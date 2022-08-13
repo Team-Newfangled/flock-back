@@ -31,10 +31,12 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MemberRepository memberRepository;
 
-    public TokenRefreshResponse refreshToken(Member account,
-                                             TokenRefreshRequest tokenRefreshRequest) {
+    public TokenRefreshResponse refreshToken(
+            TokenRefreshRequest tokenRefreshRequest) {
         return new TokenRefreshResponse(
-                jwtTokenProvider.generateAccessToken(account.getUsername())
+                jwtTokenProvider.generateAccessToken(
+                        jwtTokenProvider.extractLoginIdFromToken(tokenRefreshRequest.getRefreshToken())
+                )
         );
     }
 
@@ -51,7 +53,8 @@ public class AuthService {
                 .orElseGet(() -> joinOAuthUser(userInfoResponse));
 
         return new OAuthResponseDto(
-                jwtTokenProvider.generateAccessToken(account.getUsername())
+                jwtTokenProvider.generateAccessToken(account.getUsername()),
+                jwtTokenProvider.generateRefreshToken(account.getUsername())
         );
     }
 
