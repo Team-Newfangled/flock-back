@@ -1,6 +1,7 @@
 package com.newfangled.flockbackend.domain.team.service;
 
 import com.newfangled.flockbackend.domain.member.entity.Member;
+import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
@@ -29,14 +30,15 @@ public class TeamService {
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final ProjectRepository projectRepository;
+    private final MemberRepository memberRepository;
 
-    private TeamId getTeamId(Team team) {
-        return new TeamId(team);
+    private TeamId getTeamId(Team team, Member member) {
+        return new TeamId(team, member);
     }
 
     public TeamDto createTeam(Member member, NameDto nameDto) {
         Team team = teamRepository.save(new Team(null, nameDto.getName()));
-        teamMemberRepository.save(new TeamMember(getTeamId(team), member, Role.Leader, true));
+        teamMemberRepository.save(new TeamMember(getTeamId(team, member), Role.Leader, true));
         return new TeamDto(team.getId(), team.getName());
     }
 
@@ -53,22 +55,25 @@ public class TeamService {
     // 승인 및 미승인 팀원까지 사용할 수 있음
     // 추후 로직이 나뉠 수도 있음
     public void expulsionMember(Member member, long id, long userId) {
-        TeamId teamId = getTeamId(findById(id));
+        TeamId teamId = getTeamId(findById(id), member);
+        validatePermission(teamId);
+        TeamMember target = teamMemberRepository.findByTeamId_Member_Id(userId)
+                        .orElseThrow(TeamMember.NoMemberException::new);
+        teamMemberRepository.delete(target);
+    }
+
+    private void validatePermission(TeamId teamId) {
         TeamMember leader = teamMemberRepository
-                .findByMember_IdAndTeamId(member.getId(), teamId)
+                .findByTeamId(teamId)
                 .orElseThrow(TeamMember.NoPermissionException::new);
         if (leader.getRole() != Role.Leader) {
             throw new TeamMember.NoPermissionException();
         }
 
-        TeamMember teamMember = teamMemberRepository
-                .findByMember_IdAndTeamId(userId, teamId)
-                .orElseThrow(TeamMember.NoMemberException::new);
-        teamMemberRepository.delete(teamMember);
     }
 
-    public PageDto<TeamMemberRO> findAllMember(long id, int page) {
-        TeamId teamId = getTeamId(findById(id));
+    public PageDto<TeamMemberRO> findAllMember(Member member, long id, int page) {
+        TeamId teamId = getTeamId(findById(id), member);
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
         Page<TeamMemberRO> teamMembers = new PageImpl<>(
                 teamMemberRepository.findAllByTeamIdAndApproved(teamId, true, pageable)
@@ -80,7 +85,7 @@ public class TeamService {
     public ProjectDto createProject(Member member, long id, NameDto nameDto) {
         Team team = findById(id);
         TeamMember leader = teamMemberRepository
-                .findByMember_IdAndTeamId(member.getId(), new TeamId(team))
+                .findByTeamId(new TeamId(team, member))
                 .orElseThrow(TeamMember.NoPermissionException::new);
         if (leader.getRole() != Role.Leader) {
             throw new TeamMember.NoPermissionException();
@@ -94,9 +99,9 @@ public class TeamService {
     // 승인 대기 중인 회원들 조회
     public PageDto<TeamMemberRO> findNonApprovedMembers(Member member,
                                                         long id, int page) {
-        TeamId teamId = new TeamId(findById(id));
+        TeamId teamId = new TeamId(findById(id), member);
         TeamMember leader = teamMemberRepository
-                .findByMember_IdAndTeamId(member.getId(), teamId)
+                .findByTeamId(teamId)
                 .orElseThrow(TeamMember.NoPermissionException::new);
         if (leader.getRole() != Role.Leader) {
             throw new TeamMember.NoPermissionException();
@@ -114,22 +119,34 @@ public class TeamService {
     
     // 승인 대기 중인 회원 승인 하기
     public void approveTeamMember(Member member, long id, long teamMember) {
-        TeamId teamId = new TeamId(findById(id));
-        TeamMember leader = teamMemberRepository
-                .findByMember_IdAndTeamId(member.getId(), teamId)
-                .orElseThrow(TeamMember.NoPermissionException::new);
-        if (leader.getRole() != Role.Leader) {
-            throw new TeamMember.NoPermissionException();
-        }
-
-        TeamMember target = teamMemberRepository
-                .findByMember_IdAndTeamId(teamMember, teamId)
+        Team team = findById(id);
+        TeamId teamId = new TeamId(team, member);
+        validatePermission(teamId);
+        Member targetMember = memberRepository.findById(teamMember)
+                .orElseThrow(Member.NotExistsException::new);
+        TeamMember target = teamMemberRepository.findByTeamId(new TeamId(team, targetMember))
                 .orElseThrow(TeamMember.NoMemberException::new);
         if (target.isApproved()) {
             throw new TeamMember.AlreadyApprovedException();
         }
 
         target.setApproved();
+    }
+
+    public boolean joinMember(long id, long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(Member.NotExistsException::new);
+        TeamId teamId = new TeamId(findById(id), member);
+        if (teamMemberRepository.existsByTeamId(teamId)) {
+            return false;
+        }
+
+        teamMemberRepository.save(new TeamMember(teamId, Role.Member, false));
+        return true;
+    }
+
+    public TeamDto findTeamById(long teamId) {
+        return new TeamDto(findById(teamId));
     }
 
     @Transactional(readOnly = true)

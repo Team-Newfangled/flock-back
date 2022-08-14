@@ -63,7 +63,7 @@ public class BoardCommentService {
     protected TeamMember validateMember(Project project, Member member) {
         Team team = project.getTeam();
         TeamMember teamMember = teamMemberRepository
-                .findByMember_IdAndTeamId(member.getId(), new TeamId(team))
+                .findByTeamId(new TeamId(team, member))
                 .orElseThrow(TeamMember.NoPermissionException::new);
         if (!teamMember.isApproved()) {
             // 미승인 회원이라면

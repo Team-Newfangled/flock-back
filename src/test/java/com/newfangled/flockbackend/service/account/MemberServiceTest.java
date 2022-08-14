@@ -234,9 +234,9 @@ class MemberServiceTest {
         Member account = account(oAuth);
         List<TeamMember> teamMemberList = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
-            teamMemberList.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader, true));
+            teamMemberList.add(new TeamMember(new TeamId(team(i, randomString()), account), Role.Leader, true));
         }
-        lenient().when(teamMemberRepository.findDistinctByMember_Id(anyLong()))
+        lenient().when(teamMemberRepository.findDistinctByTeamId_Member_Id(anyLong()))
                 .thenReturn(teamMemberList);
 
         // when
@@ -251,7 +251,7 @@ class MemberServiceTest {
 
         // verify
         verify(teamMemberRepository, times(1))
-                .findDistinctByMember_Id(anyLong());
+                .findDistinctByTeamId_Member_Id(anyLong());
 
         // finally
         printTime(stopWatch.getTotalTimeMillis());

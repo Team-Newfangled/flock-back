@@ -45,9 +45,12 @@ public class TeamController {
     }
 
     @GetMapping("/{id}/members")
-    public PageDto<TeamMemberRO> findMembers(@PathVariable("id") long id,
-                                    @RequestParam int page) {
-        return teamService.findAllMember(id, page);
+    public PageDto<TeamMemberRO> findMembers(Authentication authentication,
+                                             @PathVariable("id") long id,
+                                             @RequestParam int page) {
+        return teamService.findAllMember(
+                (Member) authentication.getPrincipal(), id, page
+        );
     }
 
     @PostMapping("/{id}/projects")

@@ -94,7 +94,7 @@ public class TodoServiceTest {
 
         lenient().when(projectRepository.findById(anyLong()))
                 .thenReturn(Optional.of(project));
-        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+        lenient().when(teamMemberRepository.findByTeamId(any(TeamId.class)))
                 .thenThrow(new TeamMember.NoMemberException());
         
         // when
@@ -119,7 +119,7 @@ public class TodoServiceTest {
         Member member = member();
         ContentDto contentDto = new ContentDto("할 일 서비스 구현");
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, member, Role.ForeignMember, true);
+        TeamMember teamMember = new TeamMember(null, Role.ForeignMember, true);
         Todo todo = new Todo(
                 1L,
                 new TodoId(project, todoDetail(teamMember, contentDto.getContent())),
@@ -128,7 +128,7 @@ public class TodoServiceTest {
 
         lenient().when(projectRepository.findById(anyLong()))
                 .thenReturn(Optional.of(project));
-        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+        lenient().when(teamMemberRepository.findByTeamId(any(TeamId.class)))
                 .thenReturn(Optional.of(teamMember));
         lenient().when(todoRepository.save(any(Todo.class)))
                 .thenReturn(todo);
@@ -160,7 +160,7 @@ public class TodoServiceTest {
         lenient().when(todoRepository.findById(anyLong()))
                 .thenReturn(Optional.of(todo));
         lenient().when(
-                teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class))
+                teamMemberRepository.findByTeamId(any(TeamId.class))
         ).thenThrow(new TeamMember.NoPermissionException());
 
         // when
@@ -185,7 +185,7 @@ public class TodoServiceTest {
         // given
         Member member = member();
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, member, Role.Member, true);
+        TeamMember teamMember = new TeamMember(null, Role.Member, true);
         Todo todo = new Todo(
                 1L, new TodoId(project, todoDetail(teamMember, "궔 서비스 추가")), false
         );
@@ -195,7 +195,7 @@ public class TodoServiceTest {
         lenient().when(todoRepository.findById(anyLong()))
                 .thenReturn(Optional.of(todo));
         lenient().when(
-                teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class))
+                teamMemberRepository.findByTeamId(any(TeamId.class))
         ).thenReturn(Optional.of(teamMember));
 
         // when
@@ -218,7 +218,7 @@ public class TodoServiceTest {
         // given
         Member member = member();
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, member, Role.Member, true);
+        TeamMember teamMember = new TeamMember(null, Role.Member, true);
         Todo todo = new Todo(
                 1L,
                 new TodoId(project, todoDetail(teamMember, "할 일 삭제 기능")),
@@ -228,7 +228,7 @@ public class TodoServiceTest {
         lenient().when(todoRepository.findById(anyLong()))
                 .thenReturn(Optional.of(todo));
         lenient().when(
-                teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class))
+                teamMemberRepository.findByTeamId(any(TeamId.class))
         ).thenReturn(Optional.of(teamMember));
     
         // when
@@ -250,7 +250,7 @@ public class TodoServiceTest {
         // given
         Member member = member();
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, member, Role.Member, true);
+        TeamMember teamMember = new TeamMember(null, Role.Member, true);
         Todo todo = new Todo(
                 1L,
                 new TodoId(project, todoDetail(teamMember, "할 일 삭제 기능")),
@@ -260,7 +260,7 @@ public class TodoServiceTest {
         lenient().when(todoRepository.findById(anyLong()))
                 .thenReturn(Optional.of(todo));
         lenient().when(
-                teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class))
+                teamMemberRepository.findByTeamId(any(TeamId.class))
         ).thenReturn(Optional.of(teamMember));
     
         // when

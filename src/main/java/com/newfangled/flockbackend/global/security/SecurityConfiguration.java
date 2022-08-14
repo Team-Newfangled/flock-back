@@ -28,6 +28,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth/**").permitAll()
                 .and()
                 .authorizeRequests()
+                .antMatchers("/teams/**/join", "/join-member", "/join-mail", "/teams/**/join-mail")
+                .permitAll()
+                .and()
+                .authorizeRequests()
                 .anyRequest().authenticated()
                 .and()
                 .addFilterBefore(

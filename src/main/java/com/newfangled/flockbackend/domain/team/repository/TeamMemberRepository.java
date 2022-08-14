@@ -14,13 +14,15 @@ import java.util.Optional;
 @Repository
 public interface TeamMemberRepository extends CrudRepository<TeamMember, TeamId> {
 
-    @Query("select t from TeamMember t where t.member.id = ?1")
-    Optional<TeamMember> findByMember_Id(Long account_id);
+    @Query("select distinct t from TeamMember t where t.teamId.member.id = ?1")
+    List<TeamMember> findDistinctByTeamId_Member_Id(Long account_id);
 
-    @Query("select distinct t from TeamMember t where t.member.id = ?1")
-    List<TeamMember> findDistinctByMember_Id(Long account_id);
+    Optional<TeamMember> findByTeamId_Member_Id(Long teamId_member_id);
 
-    Optional<TeamMember> findByMember_IdAndTeamId(Long member_id, TeamId teamId);
+    @Query("select t from TeamMember t where t.teamId = ?1")
+    Optional<TeamMember> findByTeamId(TeamId teamId);
+
+    boolean existsByTeamId(TeamId teamId);
 
     Page<TeamMember> findAllByTeamIdAndApproved(TeamId teamId, boolean approved, Pageable pageable);
 

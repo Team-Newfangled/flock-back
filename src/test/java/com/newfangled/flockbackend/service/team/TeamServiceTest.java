@@ -129,13 +129,13 @@ public class TeamServiceTest {
 
         // 로직: 팀들 중에서 회원 id 를 delete
         Team team = new Team(1L, "NewFangled");
-        TeamId teamId = new TeamId(team);
         Member member = teamMaker(oAuth());
-        TeamMember teamMember = new TeamMember(teamId, member, Role.Leader, true);
+        TeamId teamId = new TeamId(team, member);
+        TeamMember teamMember = new TeamMember(teamId, Role.Leader, true);
 
         lenient().when(teamRepository.findById(anyLong()))
                         .thenReturn(Optional.of(team));
-        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+        lenient().when(teamMemberRepository.findByTeamId(any(TeamId.class)))
                         .thenReturn(Optional.of(teamMember));
 
         // when
@@ -153,9 +153,9 @@ public class TeamServiceTest {
         StopWatch stopWatch = new StopWatch();
         // given
         Team team = new Team(1L, "NewFangled");
-        TeamId teamId = new TeamId(team);
         Member member = teamMaker(oAuth());
-        TeamMember teamMember = new TeamMember(teamId, member, Role.Member, true);
+        TeamId teamId = new TeamId(team, member);
+        TeamMember teamMember = new TeamMember(teamId, Role.Member, true);
         Page<TeamMember> teamMembers = new PageImpl<>(List.of(teamMember));
 
         lenient().when(teamRepository.findById(anyLong()))
@@ -165,7 +165,7 @@ public class TeamServiceTest {
 
         // when
         stopWatch.start();
-        PageDto<TeamMemberRO> pageDto = teamService.findAllMember(1L, 0);
+        PageDto<TeamMemberRO> pageDto = teamService.findAllMember(any(Member.class), 1L, 0);
         stopWatch.stop();
 
         // then

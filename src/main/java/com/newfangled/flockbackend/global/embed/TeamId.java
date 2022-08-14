@@ -1,5 +1,6 @@
 package com.newfangled.flockbackend.global.embed;
 
+import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 
 @Getter
@@ -18,5 +20,8 @@ public class TeamId implements Serializable {
 
     @ManyToOne
     private Team team;
+
+    @OneToOne
+    private Member member;
 
 }

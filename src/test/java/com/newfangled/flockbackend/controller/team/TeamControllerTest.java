@@ -96,7 +96,7 @@ public class TeamControllerTest {
     private TeamMemberRO randomTeamMember(long id) {
         String randomString = ControllerTestUtil.randomString();
         return new TeamMemberRO(
-                id, randomString, String.format("/users/%s", randomString)
+                id, randomString, "Member", true, String.format("/users/%s", randomString)
         );
     }
 
@@ -236,7 +236,7 @@ public class TeamControllerTest {
         );
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
-        lenient().when(teamService.findAllMember(anyLong(), anyInt()))
+        lenient().when(teamService.findAllMember(any(Member.class), anyLong(), anyInt()))
                 .thenReturn(teamMemberPage);
     
         // when

@@ -295,11 +295,12 @@ class MemberControllerTest {
         List<TeamMember> results = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             results.add(new TeamMember(
-                    new TeamId(team(i, ControllerTestUtil.randomString())), member, Role.Leader, true)
+                    new TeamId(team(i, ControllerTestUtil.randomString()), member), Role.Leader, true)
             );
         }
         List<NameDto> dtoList = results.stream()
-                .map(TeamMember::getMember)
+                .map(TeamMember::getTeamId)
+                .map(TeamId::getMember)
                 .map(Member::getCompany)
                 .map(NameDto::new)
                 .collect(Collectors.toList());
@@ -329,12 +330,13 @@ class MemberControllerTest {
         for (int i = 0; i < 10; i++) {
             results.add(
                     new TeamMember(
-                            new TeamId(team(i, ControllerTestUtil.randomString())), member, Role.Leader, true
+                            new TeamId(team(i, ControllerTestUtil.randomString()), member), Role.Leader, true
                     )
             );
         }
         List<NameDto> dtoList = results.stream()
-                .map(TeamMember::getMember)
+                .map(TeamMember::getTeamId)
+                .map(TeamId::getMember)
                 .map(Member::getCompany)
                 .map(NameDto::new)
                 .collect(Collectors.toList());

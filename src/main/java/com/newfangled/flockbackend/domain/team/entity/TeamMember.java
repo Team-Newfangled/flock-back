@@ -22,9 +22,6 @@ public class TeamMember {
     @EmbeddedId
     private TeamId teamId;
 
-    @OneToOne
-    private Member member;
-
     @Enumerated(EnumType.STRING)
     private Role role;
 

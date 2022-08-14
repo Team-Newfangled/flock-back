@@ -33,7 +33,7 @@ public class TodoDto {
         TodoDetail todoDetail = todoId.getTodoDetail();
         this.content = todoDetail.getContent();
         this.color = todoDetail.getColor();
-        this.writerId = todoDetail.getTeamMember().getMember().getId();
+        this.writerId = todoDetail.getTeamMember().getTeamId().getMember().getId();
         this.startDate = todoDetail.getStartDate();
         this.endDate = todoDetail.getEndDate();
     }

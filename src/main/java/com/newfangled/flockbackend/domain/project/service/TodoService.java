@@ -130,7 +130,7 @@ public class TodoService {
     protected TeamMember validateMember(Project project, Member member) {
         Team team = project.getTeam();
         return teamMemberRepository
-                .findByMember_IdAndTeamId(member.getId(), new TeamId(team))
+                .findByTeamId(new TeamId(team, member))
                 .orElseThrow(TeamMember.NoPermissionException::new);
     }
 
