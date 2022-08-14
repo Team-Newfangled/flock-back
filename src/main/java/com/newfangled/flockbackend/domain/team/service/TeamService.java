@@ -51,6 +51,8 @@ public class TeamService {
         return new PageDto<>(teamProjects);
     }
 
+    // 승인 및 미승인 팀원까지 사용할 수 있음
+    // 추후 로직이 나뉠 수도 있음
     public void expulsionMember(Member member, long id, long userId) {
         TeamId teamId = getTeamId(findById(id));
         TeamMember leader = teamMemberRepository
@@ -76,8 +78,15 @@ public class TeamService {
         return new PageDto<>(teamMembers);
     }
 
-    public ProjectDto createProject(long id, NameDto nameDto) {
+    public ProjectDto createProject(Member member, long id, NameDto nameDto) {
         Team team = findById(id);
+        TeamMember leader = teamMemberRepository
+                .findByMember_IdAndTeamId(member.getId(), new TeamId(team))
+                .orElseThrow(TeamMember.NoPermissionException::new);
+        if (leader.getRole() != Role.Leader) {
+            throw new TeamMember.NoPermissionException();
+        }
+
         Project project = projectRepository
                 .save(new Project(1L, team, nameDto.getName(), null));
         return new ProjectDto(project);

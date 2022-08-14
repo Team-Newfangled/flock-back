@@ -260,7 +260,7 @@ public class TeamControllerTest {
         String content = objectMapper.writeValueAsString(nameDto);
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
-        lenient().when(teamService.createProject(anyLong(), any(NameDto.class)))
+        lenient().when(teamService.createProject(any(Member.class), anyLong(), any(NameDto.class)))
                 .thenReturn(projectDto);
     
         // when
@@ -285,7 +285,7 @@ public class TeamControllerTest {
         String content = objectMapper.writeValueAsString(nameDto);
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
-        lenient().when(teamService.createProject(anyLong(), any(NameDto.class)))
+        lenient().when(teamService.createProject(any(Member.class), anyLong(), any(NameDto.class)))
                 .thenThrow(new Team.NotExistsException());
     
         // when

@@ -185,6 +185,7 @@ public class TeamServiceTest {
     void addProject() {
         // given
         StopWatch stopWatch = new StopWatch();
+        Member member = new Member(1L, null, UserRole.MEMBER, "NewFangeld");
         NameDto nameDto = new NameDto("Flock");
         Team team = new Team(1L, "NewFangled");
         Project project = new Project(1L, team, nameDto.getName(), null);
@@ -196,7 +197,7 @@ public class TeamServiceTest {
 
         // when
         stopWatch.start();
-        ProjectDto projectDto = teamService.createProject(1L, nameDto);
+        ProjectDto projectDto = teamService.createProject(member, 1L, nameDto);
         stopWatch.stop();
         
         // then

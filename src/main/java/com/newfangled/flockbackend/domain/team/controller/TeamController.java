@@ -52,8 +52,12 @@ public class TeamController {
 
     @PostMapping("/{id}/projects")
     @ResponseStatus(HttpStatus.CREATED)
-    public ProjectDto addProject(@PathVariable("id") long id,
+    public ProjectDto addProject(Authentication authentication,
+                                 @PathVariable("id") long id,
                                  @RequestBody @Valid final NameDto nameDto) {
-        return teamService.createProject(id, nameDto);
+        return teamService.createProject(
+                (Member) authentication.getPrincipal(),
+                id, nameDto
+        );
     }
 }
