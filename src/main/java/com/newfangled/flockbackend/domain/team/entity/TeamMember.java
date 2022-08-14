@@ -31,6 +31,10 @@ public class TeamMember {
     @Column(name = "approved")
     private boolean approved;
 
+    public void setApproved() {
+        this.approved = true;
+    }
+
     public static class NoMemberException extends BusinessException {
         public NoMemberException() {
             super(HttpStatus.NOT_FOUND, "팀원을 찾지 못했습니다.");
@@ -43,4 +47,9 @@ public class TeamMember {
         }
     }
 
+    public static class AlreadyApprovedException extends BusinessException {
+        public AlreadyApprovedException() {
+            super(HttpStatus.CONFLICT, "이미 승인된 회원입니다.");
+        }
+    }
 }

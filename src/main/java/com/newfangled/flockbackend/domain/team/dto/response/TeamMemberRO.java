@@ -12,6 +12,8 @@ public class TeamMemberRO {
 
     private long id;
     private String name;
+    private String role;
+    private boolean approved;
 
     @JsonProperty("self-url")
     private String selfUrl;
@@ -20,6 +22,8 @@ public class TeamMemberRO {
         Member member = teamMember.getMember();
         this.id = member.getId();
         this.name = member.getUsername();
+        this.role = teamMember.getRole().name();
+        this.approved = teamMember.isApproved();
         this.selfUrl = String.format("users/%d", id);
     }
 }

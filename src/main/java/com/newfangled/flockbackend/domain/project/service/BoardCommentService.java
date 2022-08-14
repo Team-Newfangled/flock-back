@@ -62,9 +62,15 @@ public class BoardCommentService {
     @Transactional(readOnly = true)
     protected TeamMember validateMember(Project project, Member member) {
         Team team = project.getTeam();
-        return teamMemberRepository
+        TeamMember teamMember = teamMemberRepository
                 .findByMember_IdAndTeamId(member.getId(), new TeamId(team))
                 .orElseThrow(TeamMember.NoPermissionException::new);
+        if (!teamMember.isApproved()) {
+            // 미승인 회원이라면
+            throw new TeamMember.NoPermissionException();
+        }
+
+        return teamMember;
     }
 
     @Transactional(readOnly = true)

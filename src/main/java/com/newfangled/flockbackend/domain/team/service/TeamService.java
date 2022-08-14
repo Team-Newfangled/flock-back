@@ -28,7 +28,6 @@ public class TeamService {
 
     private final TeamRepository teamRepository;
     private final TeamMemberRepository teamMemberRepository;
-
     private final ProjectRepository projectRepository;
 
     private TeamId getTeamId(Team team) {
@@ -90,6 +89,47 @@ public class TeamService {
         Project project = projectRepository
                 .save(new Project(1L, team, nameDto.getName(), null));
         return new ProjectDto(project);
+    }
+
+    // 승인 대기 중인 회원들 조회
+    public PageDto<TeamMemberRO> findNonApprovedMembers(Member member,
+                                                        long id, int page) {
+        TeamId teamId = new TeamId(findById(id));
+        TeamMember leader = teamMemberRepository
+                .findByMember_IdAndTeamId(member.getId(), teamId)
+                .orElseThrow(TeamMember.NoPermissionException::new);
+        if (leader.getRole() != Role.Leader) {
+            throw new TeamMember.NoPermissionException();
+        }
+
+        Pageable pageable = PageRequest.of(page, 10);
+        Page<TeamMember> nonApprovedPage = teamMemberRepository
+                .findAllByTeamIdAndApproved(teamId, false, pageable);
+        return new PageDto<>(
+                nonApprovedPage.getNumber(),
+                nonApprovedPage.getTotalPages(),
+                nonApprovedPage.stream().map(TeamMemberRO::new).collect(Collectors.toList())
+        );
+    }
+    
+    // 승인 대기 중인 회원 승인 하기
+    public void approveTeamMember(Member member, long id, long teamMember) {
+        TeamId teamId = new TeamId(findById(id));
+        TeamMember leader = teamMemberRepository
+                .findByMember_IdAndTeamId(member.getId(), teamId)
+                .orElseThrow(TeamMember.NoPermissionException::new);
+        if (leader.getRole() != Role.Leader) {
+            throw new TeamMember.NoPermissionException();
+        }
+
+        TeamMember target = teamMemberRepository
+                .findByMember_IdAndTeamId(teamMember, teamId)
+                .orElseThrow(TeamMember.NoMemberException::new);
+        if (target.isApproved()) {
+            throw new TeamMember.AlreadyApprovedException();
+        }
+
+        target.setApproved();
     }
 
     @Transactional(readOnly = true)
