@@ -22,6 +22,6 @@ public interface TeamMemberRepository extends CrudRepository<TeamMember, TeamId>
 
     Optional<TeamMember> findByMember_IdAndTeamId(Long member_id, TeamId teamId);
 
-    Page<TeamMember> findAllByTeamId(TeamId teamId, Pageable pageable);
+    Page<TeamMember> findAllByTeamIdAndApproved(TeamId teamId, boolean approved, Pageable pageable);
 
 }

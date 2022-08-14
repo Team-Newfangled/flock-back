@@ -72,7 +72,7 @@ public class TeamService {
         TeamId teamId = getTeamId(findById(id));
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
         Page<TeamMemberRO> teamMembers = new PageImpl<>(
-                teamMemberRepository.findAllByTeamId(teamId, pageable)
+                teamMemberRepository.findAllByTeamIdAndApproved(teamId, true, pageable)
                         .stream().map(TeamMemberRO::new).collect(Collectors.toList())
         );
         return new PageDto<>(teamMembers);

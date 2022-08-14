@@ -160,7 +160,7 @@ public class TeamServiceTest {
 
         lenient().when(teamRepository.findById(anyLong()))
                 .thenReturn(Optional.of(team));
-        lenient().when(teamMemberRepository.findAllByTeamId(any(TeamId.class), any(Pageable.class)))
+        lenient().when(teamMemberRepository.findAllByTeamIdAndApproved(any(TeamId.class), true, any(Pageable.class)))
                 .thenReturn(teamMembers);
 
         // when
@@ -176,8 +176,8 @@ public class TeamServiceTest {
         printTime(stopWatch.getTotalTimeMillis());
 
         // verify
-        verify(teamMemberRepository, times(1)).findAllByTeamId(
-                any(TeamId.class), any(Pageable.class));
+        verify(teamMemberRepository, times(1)).findAllByTeamIdAndApproved(
+                any(TeamId.class), true, any(Pageable.class));
     }
     
     @DisplayName("프로젝트 추가")
