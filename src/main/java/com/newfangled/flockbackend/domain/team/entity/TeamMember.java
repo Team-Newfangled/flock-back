@@ -28,6 +28,9 @@ public class TeamMember {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(name = "approved")
+    private boolean approved;
+
     public static class NoMemberException extends BusinessException {
         public NoMemberException() {
             super(HttpStatus.NOT_FOUND, "팀원을 찾지 못했습니다.");

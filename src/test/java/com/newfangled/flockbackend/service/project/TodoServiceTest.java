@@ -119,7 +119,7 @@ public class TodoServiceTest {
         Member member = member();
         ContentDto contentDto = new ContentDto("할 일 서비스 구현");
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, member, Role.ForeignMember);
+        TeamMember teamMember = new TeamMember(null, member, Role.ForeignMember, true);
         Todo todo = new Todo(
                 1L,
                 new TodoId(project, todoDetail(teamMember, contentDto.getContent())),
@@ -185,7 +185,7 @@ public class TodoServiceTest {
         // given
         Member member = member();
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, member, Role.Member);
+        TeamMember teamMember = new TeamMember(null, member, Role.Member, true);
         Todo todo = new Todo(
                 1L, new TodoId(project, todoDetail(teamMember, "궔 서비스 추가")), false
         );
@@ -218,7 +218,7 @@ public class TodoServiceTest {
         // given
         Member member = member();
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, member, Role.Member);
+        TeamMember teamMember = new TeamMember(null, member, Role.Member, true);
         Todo todo = new Todo(
                 1L,
                 new TodoId(project, todoDetail(teamMember, "할 일 삭제 기능")),
@@ -250,7 +250,7 @@ public class TodoServiceTest {
         // given
         Member member = member();
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, member, Role.Member);
+        TeamMember teamMember = new TeamMember(null, member, Role.Member, true);
         Todo todo = new Todo(
                 1L,
                 new TodoId(project, todoDetail(teamMember, "할 일 삭제 기능")),

@@ -294,7 +294,9 @@ class MemberControllerTest {
         Member member = account(oAuth());
         List<TeamMember> results = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            results.add(new TeamMember(new TeamId(team(i, ControllerTestUtil.randomString())), member, Role.Leader));
+            results.add(new TeamMember(
+                    new TeamId(team(i, ControllerTestUtil.randomString())), member, Role.Leader, true)
+            );
         }
         List<NameDto> dtoList = results.stream()
                 .map(TeamMember::getMember)
@@ -325,7 +327,11 @@ class MemberControllerTest {
         Member member = account(oAuth());
         List<TeamMember> results = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            results.add(new TeamMember(new TeamId(team(i, ControllerTestUtil.randomString())), member, Role.Leader));
+            results.add(
+                    new TeamMember(
+                            new TeamId(team(i, ControllerTestUtil.randomString())), member, Role.Leader, true
+                    )
+            );
         }
         List<NameDto> dtoList = results.stream()
                 .map(TeamMember::getMember)

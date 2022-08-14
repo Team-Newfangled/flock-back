@@ -234,7 +234,7 @@ class MemberServiceTest {
         Member account = account(oAuth);
         List<TeamMember> teamMemberList = new ArrayList<>();
         for (int i = 0; i < 8; i++) {
-            teamMemberList.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader));
+            teamMemberList.add(new TeamMember(new TeamId(team(i, randomString())), account, Role.Leader, true));
         }
         lenient().when(teamMemberRepository.findDistinctByMember_Id(anyLong()))
                 .thenReturn(teamMemberList);

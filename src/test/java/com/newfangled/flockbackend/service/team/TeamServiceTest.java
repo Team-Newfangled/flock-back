@@ -131,7 +131,7 @@ public class TeamServiceTest {
         Team team = new Team(1L, "NewFangled");
         TeamId teamId = new TeamId(team);
         Member member = teamMaker(oAuth());
-        TeamMember teamMember = new TeamMember(teamId, member, Role.Leader);
+        TeamMember teamMember = new TeamMember(teamId, member, Role.Leader, true);
 
         lenient().when(teamRepository.findById(anyLong()))
                         .thenReturn(Optional.of(team));
@@ -155,7 +155,7 @@ public class TeamServiceTest {
         Team team = new Team(1L, "NewFangled");
         TeamId teamId = new TeamId(team);
         Member member = teamMaker(oAuth());
-        TeamMember teamMember = new TeamMember(teamId, member, Role.Member);
+        TeamMember teamMember = new TeamMember(teamId, member, Role.Member, true);
         Page<TeamMember> teamMembers = new PageImpl<>(List.of(teamMember));
 
         lenient().when(teamRepository.findById(anyLong()))

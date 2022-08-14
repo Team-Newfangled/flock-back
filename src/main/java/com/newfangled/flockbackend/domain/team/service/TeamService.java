@@ -37,7 +37,7 @@ public class TeamService {
 
     public TeamDto createTeam(Member member, NameDto nameDto) {
         Team team = teamRepository.save(new Team(null, nameDto.getName()));
-        teamMemberRepository.save(new TeamMember(getTeamId(team), member, Role.Leader));
+        teamMemberRepository.save(new TeamMember(getTeamId(team), member, Role.Leader, true));
         return new TeamDto(team.getId(), team.getName());
     }
 

@@ -265,7 +265,7 @@ public class ProjectControllerTest {
         Member member = member();
         Team team = new Team(1L, "NewFangled");
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(new TeamId(team), member, Role.Leader);
+        TeamMember teamMember = new TeamMember(new TeamId(team), member, Role.Leader, true);
         ContentDto contentDto = new ContentDto("https://image.png");
         String content = objectMapper.writeValueAsString(contentDto);
 
