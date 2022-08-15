@@ -1,8 +1,7 @@
 package com.newfangled.flockbackend.domain.project.entity.sub;
 
-import com.newfangled.flockbackend.domain.project.entity.Project;
-import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.global.exception.BusinessException;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,29 +10,25 @@ import org.springframework.http.HttpStatus;
 import javax.persistence.*;
 
 @Getter
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Board {
+public class BoardFile {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    private Project project;
+    @ManyToOne
+    private Board board;
 
-    @OneToOne
-    private TeamMember teamMember;
+    private String file;
 
-    private String content;
-
-    public void modifyContent(String content) {
-        this.content = content;
+    public void updateFile(String file) {
+        this.file = file;
     }
 
     public static class NotExistsException extends BusinessException {
         public NotExistsException() {
-            super(HttpStatus.NOT_FOUND, "피드를 찾지 못하였습니다.");
+            super(HttpStatus.NOT_FOUND, "파일을 찾지 못하였습니다.");
         }
     }
-
 }
