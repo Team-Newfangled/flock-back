@@ -108,7 +108,8 @@ public class TodoService {
         Project project = findProjectById(projectId);
         validateMember(project, member);
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
-        Page<Todo> todos = todoRepository.findAllByTodoId_ProjectAndTodoId_TodoDetail_TeamMember_Member_Id(project, userId, pageable);
+        Page<Todo> todos = todoRepository
+                .findAllByProjectAndMemberId(project, userId, pageable);
         return new PageDto<>(
                 todos.getNumber(),
                 todos.getTotalPages(),

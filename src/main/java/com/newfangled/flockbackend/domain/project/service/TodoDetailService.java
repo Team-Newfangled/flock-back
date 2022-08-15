@@ -59,7 +59,7 @@ public class TodoDetailService {
 
         List<TodoDetail> todoDetails = todoDetailRepository
                 .findByStartDateBetween(
-                        startDate, endDate
+                        projectId, startDate, endDate
         );
 
         return new ResultListDto<>(

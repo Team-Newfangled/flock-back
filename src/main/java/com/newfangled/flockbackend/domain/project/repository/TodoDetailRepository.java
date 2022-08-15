@@ -14,7 +14,9 @@ import java.util.List;
 @Repository
 public interface TodoDetailRepository extends JpaRepository<TodoDetail, DetailId> {
 
+    @Query("select t from TodoDetail t " +
+            "where t.detailId.todo.todoId.project.id = ?1 and t.startDate between ?2 and ?3")
     List<TodoDetail> findByStartDateBetween(
-            LocalDate startDate, LocalDate startDate2
+            Long projectId, LocalDate startDate, LocalDate startDate2
     );
 }
