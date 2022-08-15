@@ -82,7 +82,7 @@ public class ProjectService {
     protected void validateLeader(Project project, Member member) {
         Team team = project.getTeam();
         TeamMember teamMember = teamMemberRepository
-                .findByMember_IdAndTeamId(member.getId(), new TeamId(team))
+                .findByTeamId(new TeamId(team, member))
                 .orElseThrow(TeamMember.NoPermissionException::new);
         if (teamMember.getRole() != Role.Leader) {
             throw new TeamMember.NoPermissionException();

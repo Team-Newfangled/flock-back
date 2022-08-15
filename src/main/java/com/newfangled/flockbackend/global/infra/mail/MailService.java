@@ -23,7 +23,7 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String senderEmail;
 
-    public void sendMail(String teamName, long id, String email) {
+    public void sendMail(String teamName, long id, String email, long memberId) {
         try {
             MimeMessage mimeMailMessage = javaMailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMailMessage, true);
@@ -34,6 +34,7 @@ public class MailService {
             Context context = new Context();
             context.setVariable("team", teamName);
             context.setVariable("id", id);
+            context.setVariable("member_id", memberId);
 
             String html = templateEngine.process("emailTemplate", context);
             mimeMessageHelper.setText(html, true);

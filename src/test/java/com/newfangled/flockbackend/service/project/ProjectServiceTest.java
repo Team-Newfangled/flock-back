@@ -128,8 +128,8 @@ public class ProjectServiceTest {
         doNothing().when(projectRepository).delete(any(Project.class));
         lenient().when(projectRepository.findById(anyLong()))
                 .thenReturn(Optional.of(new Project(1L, new Team(), "Flock", null)));
-        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
-                .thenReturn(Optional.of(new TeamMember(new TeamId(), member, Role.Leader)));
+        lenient().when(teamMemberRepository.findByTeamId(any(TeamId.class)))
+                .thenReturn(Optional.of(new TeamMember(new TeamId(), Role.Leader, true)));
 
         // when
         stopWatch.start();
@@ -172,11 +172,11 @@ public class ProjectServiceTest {
         Member member = new Member(1L, null, UserRole.MEMBER, "DGSW");
         NameDto nameDto = new NameDto("끼리끼리");
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, member, Role.Leader);
+        TeamMember teamMember = new TeamMember(null, Role.Leader, true);
 
         lenient().when(projectRepository.findById(anyLong()))
                 .thenReturn(Optional.of(project));
-        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+        lenient().when(teamMemberRepository.findByTeamId(any(TeamId.class)))
                 .thenReturn(Optional.of(teamMember));
 
         // when
@@ -200,7 +200,7 @@ public class ProjectServiceTest {
 
         lenient().when(projectRepository.findById(anyLong()))
                 .thenReturn(Optional.of(project));
-        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+        lenient().when(teamMemberRepository.findByTeamId(any(TeamId.class)))
                 .thenThrow(new TeamMember.NoPermissionException());
 
         // when
@@ -226,11 +226,11 @@ public class ProjectServiceTest {
         Member member = new Member(1L, null, UserRole.MEMBER, "DGSW");
         ContentDto contentDto = new ContentDto("https://이미지.jpg");
         Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, member, Role.Leader);
+        TeamMember teamMember = new TeamMember(null, Role.Leader, true);
 
         lenient().when(projectRepository.findById(anyLong()))
                 .thenReturn(Optional.of(project));
-        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+        lenient().when(teamMemberRepository.findByTeamId(any(TeamId.class)))
                 .thenReturn(Optional.of(teamMember));
 
         // when

@@ -129,13 +129,13 @@ public class TeamServiceTest {
 
         // 로직: 팀들 중에서 회원 id 를 delete
         Team team = new Team(1L, "NewFangled");
-        TeamId teamId = new TeamId(team);
         Member member = teamMaker(oAuth());
-        TeamMember teamMember = new TeamMember(teamId, member, Role.Leader);
+        TeamId teamId = new TeamId(team, member);
+        TeamMember teamMember = new TeamMember(teamId, Role.Leader, true);
 
         lenient().when(teamRepository.findById(anyLong()))
                         .thenReturn(Optional.of(team));
-        lenient().when(teamMemberRepository.findByMember_IdAndTeamId(anyLong(), any(TeamId.class)))
+        lenient().when(teamMemberRepository.findByTeamId(any(TeamId.class)))
                         .thenReturn(Optional.of(teamMember));
 
         // when
@@ -153,19 +153,19 @@ public class TeamServiceTest {
         StopWatch stopWatch = new StopWatch();
         // given
         Team team = new Team(1L, "NewFangled");
-        TeamId teamId = new TeamId(team);
         Member member = teamMaker(oAuth());
-        TeamMember teamMember = new TeamMember(teamId, member, Role.Member);
+        TeamId teamId = new TeamId(team, member);
+        TeamMember teamMember = new TeamMember(teamId, Role.Member, true);
         Page<TeamMember> teamMembers = new PageImpl<>(List.of(teamMember));
 
         lenient().when(teamRepository.findById(anyLong()))
                 .thenReturn(Optional.of(team));
-        lenient().when(teamMemberRepository.findAllByTeamId(any(TeamId.class), any(Pageable.class)))
+        lenient().when(teamMemberRepository.findAllByTeamIdAndApproved(any(TeamId.class), true, any(Pageable.class)))
                 .thenReturn(teamMembers);
 
         // when
         stopWatch.start();
-        PageDto<TeamMemberRO> pageDto = teamService.findAllMember(1L, 0);
+        PageDto<TeamMemberRO> pageDto = teamService.findAllMember(any(Member.class), 1L, 0);
         stopWatch.stop();
 
         // then
@@ -176,8 +176,8 @@ public class TeamServiceTest {
         printTime(stopWatch.getTotalTimeMillis());
 
         // verify
-        verify(teamMemberRepository, times(1)).findAllByTeamId(
-                any(TeamId.class), any(Pageable.class));
+        verify(teamMemberRepository, times(1)).findAllByTeamIdAndApproved(
+                any(TeamId.class), true, any(Pageable.class));
     }
     
     @DisplayName("프로젝트 추가")
@@ -185,6 +185,7 @@ public class TeamServiceTest {
     void addProject() {
         // given
         StopWatch stopWatch = new StopWatch();
+        Member member = new Member(1L, null, UserRole.MEMBER, "NewFangeld");
         NameDto nameDto = new NameDto("Flock");
         Team team = new Team(1L, "NewFangled");
         Project project = new Project(1L, team, nameDto.getName(), null);
@@ -196,7 +197,7 @@ public class TeamServiceTest {
 
         // when
         stopWatch.start();
-        ProjectDto projectDto = teamService.createProject(1L, nameDto);
+        ProjectDto projectDto = teamService.createProject(member, 1L, nameDto);
         stopWatch.stop();
         
         // then

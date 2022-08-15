@@ -23,6 +23,6 @@ public class CommentDto {
         this.id = boardComment.getId();
         this.comment = boardComment.getContent();
         this.boardId = boardComment.getBoard().getId();
-        this.writerId = boardComment.getTeamMember().getMember().getId();
+        this.writerId = boardComment.getTeamMember().getTeamId().getMember().getId();
     }
 }

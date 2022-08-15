@@ -23,7 +23,7 @@ public class BoardDto {
     public BoardDto(Board board) {
         this.id = board.getId();
         this.content = board.getContent();
-        this.writerId = board.getTeamMember().getMember().getId();
+        this.writerId = board.getTeamMember().getTeamId().getMember().getId();
         this.file = board.getFile();
     }
 

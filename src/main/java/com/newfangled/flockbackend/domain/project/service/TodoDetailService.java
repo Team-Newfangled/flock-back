@@ -85,9 +85,12 @@ public class TodoDetailService {
     @Transactional(readOnly = true)
     protected void validateMember(Project project, Member member) {
         Team team = project.getTeam();
-        teamMemberRepository
-                .findByMember_IdAndTeamId(member.getId(), new TeamId(team))
+        TeamMember teamMember = teamMemberRepository
+                .findByTeamId(new TeamId(team, member))
                 .orElseThrow(TeamMember.NoPermissionException::new);
+        if (!teamMember.isApproved()) {
+            throw new TeamMember.NoPermissionException();
+        }
     }
 
     private LocalDate getDayOfMonth(int year, int month) {

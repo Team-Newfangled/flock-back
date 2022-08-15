@@ -45,15 +45,22 @@ public class TeamController {
     }
 
     @GetMapping("/{id}/members")
-    public PageDto<TeamMemberRO> findMembers(@PathVariable("id") long id,
-                                    @RequestParam int page) {
-        return teamService.findAllMember(id, page);
+    public PageDto<TeamMemberRO> findMembers(Authentication authentication,
+                                             @PathVariable("id") long id,
+                                             @RequestParam int page) {
+        return teamService.findAllMember(
+                (Member) authentication.getPrincipal(), id, page
+        );
     }
 
     @PostMapping("/{id}/projects")
     @ResponseStatus(HttpStatus.CREATED)
-    public ProjectDto addProject(@PathVariable("id") long id,
+    public ProjectDto addProject(Authentication authentication,
+                                 @PathVariable("id") long id,
                                  @RequestBody @Valid final NameDto nameDto) {
-        return teamService.createProject(id, nameDto);
+        return teamService.createProject(
+                (Member) authentication.getPrincipal(),
+                id, nameDto
+        );
     }
 }

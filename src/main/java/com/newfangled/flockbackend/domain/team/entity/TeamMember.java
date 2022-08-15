@@ -22,11 +22,15 @@ public class TeamMember {
     @EmbeddedId
     private TeamId teamId;
 
-    @OneToOne
-    private Member member;
-
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @Column(name = "approved")
+    private boolean approved;
+
+    public void setApproved() {
+        this.approved = true;
+    }
 
     public static class NoMemberException extends BusinessException {
         public NoMemberException() {
@@ -40,4 +44,9 @@ public class TeamMember {
         }
     }
 
+    public static class AlreadyApprovedException extends BusinessException {
+        public AlreadyApprovedException() {
+            super(HttpStatus.CONFLICT, "이미 승인된 회원입니다.");
+        }
+    }
 }

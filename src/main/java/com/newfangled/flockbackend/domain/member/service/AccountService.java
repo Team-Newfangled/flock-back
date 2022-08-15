@@ -10,6 +10,7 @@ import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.dto.response.ResultListDto;
+import com.newfangled.flockbackend.global.embed.TeamId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,13 +71,22 @@ public class AccountService {
     }
 
     public ResultListDto<NameDto> findAllTeams(long accountId) {
-        List<NameDto> companyNames = teamMemberRepository.findDistinctByMember_Id(accountId)
+        List<NameDto> companyNames = teamMemberRepository
+                .findDistinctByTeamId_Member_Id(accountId)
                 .stream()
-                .map(TeamMember::getMember)
+                .map(TeamMember::getTeamId)
+                .map(TeamId::getMember)
                 .map(Member::getCompany)
                 .map(NameDto::new)
                 .collect(Collectors.toList());
         return new ResultListDto<>(companyNames);
+    }
+
+    @Transactional(readOnly = true)
+    public long findByEmail(String email) {
+        return memberRepository.findByOAuth_Email(email)
+                .orElseThrow(Member.NotExistsException::new)
+                .getId();
     }
 
     @Transactional(readOnly = true)

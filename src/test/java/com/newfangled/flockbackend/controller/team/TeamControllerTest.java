@@ -96,7 +96,7 @@ public class TeamControllerTest {
     private TeamMemberRO randomTeamMember(long id) {
         String randomString = ControllerTestUtil.randomString();
         return new TeamMemberRO(
-                id, randomString, String.format("/users/%s", randomString)
+                id, randomString, "Member", true, String.format("/users/%s", randomString)
         );
     }
 
@@ -236,7 +236,7 @@ public class TeamControllerTest {
         );
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
-        lenient().when(teamService.findAllMember(anyLong(), anyInt()))
+        lenient().when(teamService.findAllMember(any(Member.class), anyLong(), anyInt()))
                 .thenReturn(teamMemberPage);
     
         // when
@@ -260,7 +260,7 @@ public class TeamControllerTest {
         String content = objectMapper.writeValueAsString(nameDto);
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
-        lenient().when(teamService.createProject(anyLong(), any(NameDto.class)))
+        lenient().when(teamService.createProject(any(Member.class), anyLong(), any(NameDto.class)))
                 .thenReturn(projectDto);
     
         // when
@@ -285,7 +285,7 @@ public class TeamControllerTest {
         String content = objectMapper.writeValueAsString(nameDto);
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
-        lenient().when(teamService.createProject(anyLong(), any(NameDto.class)))
+        lenient().when(teamService.createProject(any(Member.class), anyLong(), any(NameDto.class)))
                 .thenThrow(new Team.NotExistsException());
     
         // when
