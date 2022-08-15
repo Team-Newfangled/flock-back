@@ -12,6 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface TodoRepository extends JpaRepository<Todo, Long> {
 
     @Query("select t from Todo t where t.todoId.project = ?1 and t.todoId.todoDetail.teamMember.teamId.member.id = ?2")
-    Page<Todo> findAllByTodoId_ProjectAndTodoId_TodoDetail_TeamMember_Member_Id(Project todoId_project, Long todoId_todoDetail_teamMember_member_id, Pageable pageable);
+    Page<Todo> findAllByProjectAndMemberId(
+            Project todoId_project, Long memberId, Pageable pageable
+    );
 
 }

@@ -27,6 +27,8 @@ public class TodoDto {
     @JsonProperty("end-date")
     private LocalDate endDate;
 
+    private boolean completed;
+
     public TodoDto(Todo todo) {
         this.id = todo.getId();
         TodoId todoId = todo.getTodoId();
@@ -36,6 +38,7 @@ public class TodoDto {
         this.writerId = todoDetail.getTeamMember().getTeamId().getMember().getId();
         this.startDate = todoDetail.getStartDate();
         this.endDate = todoDetail.getEndDate();
+        this.completed = todo.isCompleted();
     }
 
 }
