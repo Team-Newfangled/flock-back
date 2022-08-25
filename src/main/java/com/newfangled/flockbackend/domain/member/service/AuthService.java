@@ -44,10 +44,8 @@ public class AuthService {
     public OAuthResponseDto oAuthGoogle(String code) {
         GoogleAuthService.GetAccessTokenResponse accessTokenResponse
                 = getAccessTokenResponse(code);
-        log.info(accessTokenResponse.toString());
         GoogleApiService.GetUserInfoResponse userInfoResponse
                 = getUserInfoResponse(accessTokenResponse.getAccessToken());
-        log.info(userInfoResponse.toString());
 
         Member account = memberRepository.findByOAuth_OauthId(userInfoResponse.getOpenId())
                 .orElseGet(() -> joinOAuthUser(userInfoResponse));
