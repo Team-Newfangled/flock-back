@@ -76,8 +76,11 @@ public class BoardController {
     @DeleteMapping("/boards/{id}/files")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public LinkListDto deleteFile(Authentication authentication,
-                                  @PathVariable("id") long id) {
-        return boardService.deleteFile((Member) authentication.getPrincipal(), id);
+                                  @PathVariable("id") long id,
+                                  @RequestParam("file_id") long fileId) {
+        return boardService.deleteFile(
+                (Member) authentication.getPrincipal(), id, fileId
+        );
     }
 
     @PostMapping("/board/{id}/comments")
