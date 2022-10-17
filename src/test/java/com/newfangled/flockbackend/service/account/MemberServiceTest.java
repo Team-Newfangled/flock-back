@@ -1,6 +1,7 @@
 package com.newfangled.flockbackend.service.account;
 
 import com.newfangled.flockbackend.domain.member.dto.response.ProfileDto;
+import com.newfangled.flockbackend.domain.member.dto.response.TeamListDto;
 import com.newfangled.flockbackend.domain.member.embed.OAuth;
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
@@ -13,7 +14,6 @@ import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.dto.NameDto;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
-import com.newfangled.flockbackend.global.dto.response.ResultListDto;
 import com.newfangled.flockbackend.global.embed.TeamId;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
@@ -241,13 +241,13 @@ class MemberServiceTest {
 
         // when
         stopWatch.start();
-        ResultListDto<NameDto> companies = accountService.findAllTeams(1L);
+        TeamListDto teamListDto = accountService.findAllTeams(1L);
         stopWatch.stop();
 
         // then
-        assertThat(companies).isNotNull();
-        assertThat(companies.getResults()).isNotEmpty();
-        assertThat(companies.getResults().size()).isEqualTo(8);
+        assertThat(teamListDto).isNotNull();
+        assertThat(teamListDto.getResult()).isNotEmpty();
+        assertThat(teamListDto.getResult().size()).isEqualTo(8);
 
         // verify
         verify(teamMemberRepository, times(1))

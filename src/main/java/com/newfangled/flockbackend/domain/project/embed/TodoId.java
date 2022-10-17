@@ -6,11 +6,9 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cascade;
 
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Getter
@@ -21,7 +19,8 @@ public class TodoId implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private Project project;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private TodoDetail todoDetail;
 
 }

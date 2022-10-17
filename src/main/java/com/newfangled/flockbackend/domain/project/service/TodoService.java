@@ -1,6 +1,7 @@
 package com.newfangled.flockbackend.domain.project.service;
 
 import com.newfangled.flockbackend.domain.member.entity.Member;
+import com.newfangled.flockbackend.domain.project.dto.request.TodoCompleteDto;
 import com.newfangled.flockbackend.domain.project.dto.request.TodoModifyDto;
 import com.newfangled.flockbackend.domain.project.dto.response.TodoDto;
 import com.newfangled.flockbackend.domain.project.embed.DetailId;
@@ -52,14 +53,15 @@ public class TodoService {
                 false
         );
         Todo savedTodo = todoRepository.save(todo);
+        LocalDate date = LocalDate.now();
 
         TodoDetail todoDetail = new TodoDetail(
                 new DetailId(todo),
                 teamMember,
                 contentDto.getContent(),
                 getRandomHexColor(),
-                LocalDate.now(),
-                null
+                date,
+                date.plusDays(3)
         );
         TodoDetail savedDetail = todoDetailRepository.save(todoDetail);
         todo.setTodoId(new TodoId(project, savedDetail));
@@ -89,14 +91,16 @@ public class TodoService {
         Todo todo = findById(todoId);
         Project project = todo.getTodoId().getProject();
         validateMember(project, member);
+        todoDetailRepository.deleteById(new DetailId(todo));
         todoRepository.delete(todo);
     }
 
-    public LinkListDto completeTodo(Member member, long todoId) {
+    public LinkListDto completeTodo(Member member, long todoId,
+                                    final TodoCompleteDto todoCompleteDto) {
         Todo todo = findById(todoId);
         Project project = todo.getTodoId().getProject();
         validateMember(project, member);
-        todo.setCompleted();
+        todo.setCompleted(todoCompleteDto.isComplete());
         return new LinkListDto(
                 "할 일을 완료했습니다.",
                 List.of(new LinkDto("self", "GET", String.format("/todo/%d", todoId)))

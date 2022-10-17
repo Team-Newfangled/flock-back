@@ -29,8 +29,9 @@ public class Todo {
         this.todoId = todoId;
     }
 
-    public void setCompleted() {
-        this.completed = true;
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     public static class NotExistsException extends BusinessException {

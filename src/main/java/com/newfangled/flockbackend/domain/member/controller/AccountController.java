@@ -1,11 +1,11 @@
 package com.newfangled.flockbackend.domain.member.controller;
 
 import com.newfangled.flockbackend.domain.member.dto.response.ProfileDto;
+import com.newfangled.flockbackend.domain.member.dto.response.TeamListDto;
 import com.newfangled.flockbackend.domain.member.service.AccountService;
 import com.newfangled.flockbackend.global.dto.NameDto;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
-import com.newfangled.flockbackend.global.dto.response.ResultListDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -51,8 +51,7 @@ public class AccountController {
     }
 
     @GetMapping("/team")
-    public ResultListDto<NameDto> findAllTeams(
-            @PathVariable("user-id") long accountId) {
+    public TeamListDto findAllTeams(@PathVariable("user-id") long accountId) {
         return accountService.findAllTeams(accountId);
     }
 }

@@ -135,8 +135,11 @@ public class TeamServiceTest {
 
         lenient().when(teamRepository.findById(anyLong()))
                         .thenReturn(Optional.of(team));
-        lenient().when(teamMemberRepository.findByTeamId(any(TeamId.class)))
+        lenient().when(teamMemberRepository.findByTeamId(any()))
+                .thenReturn(Optional.of(teamMember));
+        lenient().when(teamMemberRepository.findByTeamId_Member_Id(anyLong()))
                         .thenReturn(Optional.of(teamMember));
+
 
         // when
         stopWatch.start();
@@ -160,7 +163,7 @@ public class TeamServiceTest {
 
         lenient().when(teamRepository.findById(anyLong()))
                 .thenReturn(Optional.of(team));
-        lenient().when(teamMemberRepository.findAllByTeamIdAndApproved(any(TeamId.class), true, any(Pageable.class)))
+        lenient().when(teamMemberRepository.findAllByTeamId_TeamAndApproved(any(Team.class), anyBoolean(), any(Pageable.class)))
                 .thenReturn(teamMembers);
 
         // when
@@ -176,8 +179,8 @@ public class TeamServiceTest {
         printTime(stopWatch.getTotalTimeMillis());
 
         // verify
-        verify(teamMemberRepository, times(1)).findAllByTeamIdAndApproved(
-                any(TeamId.class), true, any(Pageable.class));
+        verify(teamMemberRepository, times(1)).findAllByTeamId_TeamAndApproved(
+                any(Team.class), anyBoolean(), any(Pageable.class));
     }
     
     @DisplayName("프로젝트 추가")
@@ -192,6 +195,8 @@ public class TeamServiceTest {
 
         lenient().when(teamRepository.findById(anyLong()))
                 .thenReturn(Optional.of(team));
+        lenient().when(teamMemberRepository.findByTeamId(any()))
+                .thenReturn(Optional.of(new TeamMember(null, Role.Leader, false)));
         lenient().when(projectRepository.save(any(Project.class)))
                 .thenReturn(project);
 

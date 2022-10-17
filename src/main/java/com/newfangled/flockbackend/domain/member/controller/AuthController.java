@@ -20,6 +20,8 @@ public class AuthController {
 
     @GetMapping("/oauth")
     public OAuthResponseDto oAuthGoogle(@RequestParam String code) {
+        System.out.println(authService);
+        System.out.println(code);
         return authService.oAuthGoogle(code);
     }
 

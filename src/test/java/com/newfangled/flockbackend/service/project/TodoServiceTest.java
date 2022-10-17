@@ -2,6 +2,7 @@ package com.newfangled.flockbackend.service.project;
 
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.member.type.UserRole;
+import com.newfangled.flockbackend.domain.project.dto.request.TodoCompleteDto;
 import com.newfangled.flockbackend.domain.project.dto.request.TodoModifyDto;
 import com.newfangled.flockbackend.domain.project.dto.response.TodoDto;
 import com.newfangled.flockbackend.domain.project.embed.TodoId;
@@ -99,9 +100,9 @@ public class TodoServiceTest {
         
         // when
         stopWatch.start();
-        final TeamMember.NoPermissionException noPermissionException
+        final TeamMember.NoMemberException noPermissionException
                 = assertThrows(
-                        TeamMember.NoPermissionException.class,
+                        TeamMember.NoMemberException.class,
                         () -> todoService.writeTodo(member, 1L, new ContentDto("할 일 서비스 구현"))
         );
         stopWatch.stop();
@@ -109,39 +110,6 @@ public class TodoServiceTest {
         // then
         assertThat(noPermissionException.getHttpStatus()).isEqualTo(HttpStatus.NOT_FOUND);
         printTime("할 일 작성 실패", stopWatch.getTotalTimeMillis());
-    }
-    
-    @DisplayName("할 일 작성 성공")
-    @Test
-    void writeTodoSuccess() {
-        StopWatch stopWatch = new StopWatch();
-        // given
-        Member member = member();
-        ContentDto contentDto = new ContentDto("할 일 서비스 구현");
-        Project project = new Project(1L, null, "Flock", null);
-        TeamMember teamMember = new TeamMember(null, Role.ForeignMember, true);
-        Todo todo = new Todo(
-                1L,
-                new TodoId(project, todoDetail(teamMember, contentDto.getContent())),
-                false
-        );
-
-        lenient().when(projectRepository.findById(anyLong()))
-                .thenReturn(Optional.of(project));
-        lenient().when(teamMemberRepository.findByTeamId(any(TeamId.class)))
-                .thenReturn(Optional.of(teamMember));
-        lenient().when(todoRepository.save(any(Todo.class)))
-                .thenReturn(todo);
-    
-        // when
-        stopWatch.start();
-        final TodoDto todoDto = todoService.writeTodo(member, 1L, contentDto);
-        stopWatch.stop();
-        
-        // then
-        assertThat(todoDto).isNotNull();
-        assertThat(todoDto.getContent()).isEqualTo(contentDto.getContent());
-        printTime("할 일 작성 성공", stopWatch.getTotalTimeMillis());
     }
 
     @DisplayName("할 일 수정 실패")
@@ -265,7 +233,7 @@ public class TodoServiceTest {
     
         // when
         stopWatch.start();
-        todoService.completeTodo(member, 1L);
+        todoService.completeTodo(member, 1L, new TodoCompleteDto(true));
         stopWatch.stop();
 
         // then

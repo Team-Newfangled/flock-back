@@ -1,8 +1,11 @@
 package com.newfangled.flockbackend.domain.member.service;
 
 import com.newfangled.flockbackend.domain.member.dto.response.ProfileDto;
+import com.newfangled.flockbackend.domain.member.dto.response.TeamListDto;
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
+import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
+import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.global.dto.NameDto;
@@ -15,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,16 +74,15 @@ public class AccountService {
         return new LinkListDto("회사명을 수정하였습니다.", List.of(linkDto));
     }
 
-    public ResultListDto<NameDto> findAllTeams(long accountId) {
-        List<NameDto> companyNames = teamMemberRepository
+    public TeamListDto findAllTeams(long accountId) {
+        List<TeamDto> teams = teamMemberRepository
                 .findDistinctByTeamId_Member_Id(accountId)
                 .stream()
                 .map(TeamMember::getTeamId)
-                .map(TeamId::getMember)
-                .map(Member::getCompany)
-                .map(NameDto::new)
+                .map(TeamId::getTeam)
+                .map(TeamDto::new)
                 .collect(Collectors.toList());
-        return new ResultListDto<>(companyNames);
+        return new TeamListDto(teams);
     }
 
     @Transactional(readOnly = true)

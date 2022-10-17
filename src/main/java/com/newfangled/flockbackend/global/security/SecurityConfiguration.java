@@ -4,6 +4,7 @@ import com.newfangled.flockbackend.global.jwt.filter.JwtTokenFilter;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -16,6 +17,17 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
+    public void configure(WebSecurity web) {
+        // http://localhost:8080/swagger-ui/index.html
+        web.ignoring().antMatchers(
+                "/v3/api-docs",
+                "/v2/api-docs", "/configuration/ui",
+                "/swagger-resources", "/configuration/security",
+                "/swagger-ui.html", "/webjars/**", "/swagger/**"
+        );
+    }
+
+    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
@@ -26,10 +38,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
-                .and()
-                .authorizeRequests()
-                .antMatchers("/teams/**/join", "/join-member", "/join-mail", "/teams/**/join-mail")
-                .permitAll()
+                .antMatchers("/users/6").permitAll()
+                .antMatchers("/teams/**/join", "/join-member", "/join-mail", "/teams/**/join-mail").permitAll()
+                .antMatchers("/swagger-ui/**").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/webjar/**").permitAll()
+                .antMatchers("/swagger-resources/**").permitAll()
                 .and()
                 .authorizeRequests()
                 .anyRequest().authenticated()

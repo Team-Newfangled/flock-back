@@ -10,6 +10,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class OAuthResponseDto {
 
+    @JsonProperty(value = "user_id")
+    private long userId;
+
     @NotNull
     @JsonProperty(value = "access_token")
     private String accessToken;
