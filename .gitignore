@@ -40,3 +40,5 @@ out/
 application.yml
 src/main/resources/templates/
 src/main/resources/static/
+Dockerfile
+docker-compose.yml

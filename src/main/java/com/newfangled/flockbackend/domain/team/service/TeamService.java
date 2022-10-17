@@ -73,10 +73,10 @@ public class TeamService {
     }
 
     public PageDto<TeamMemberRO> findAllMember(Member member, long id, int page) {
-        TeamId teamId = getTeamId(findById(id), member);
-        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        Team team = findById(id);
+        Pageable pageable = PageRequest.of(page, 10);
         Page<TeamMemberRO> teamMembers = new PageImpl<>(
-                teamMemberRepository.findAllByTeamIdAndApproved(teamId, true, pageable)
+                teamMemberRepository.findAllByTeamId_TeamAndApproved(team, true, pageable)
                         .stream().map(TeamMemberRO::new).collect(Collectors.toList())
         );
         return new PageDto<>(teamMembers);
@@ -92,14 +92,15 @@ public class TeamService {
         }
 
         Project project = projectRepository
-                .save(new Project(1L, team, nameDto.getName(), null));
+                .save(new Project(null, team, nameDto.getName(), null));
         return new ProjectDto(project);
     }
 
     // 승인 대기 중인 회원들 조회
     public PageDto<TeamMemberRO> findNonApprovedMembers(Member member,
                                                         long id, int page) {
-        TeamId teamId = new TeamId(findById(id), member);
+        Team team = findById(id);
+        TeamId teamId = new TeamId(team, member);
         TeamMember leader = teamMemberRepository
                 .findByTeamId(teamId)
                 .orElseThrow(TeamMember.NoPermissionException::new);
@@ -109,7 +110,7 @@ public class TeamService {
 
         Pageable pageable = PageRequest.of(page, 10);
         Page<TeamMember> nonApprovedPage = teamMemberRepository
-                .findAllByTeamIdAndApproved(teamId, false, pageable);
+                .findAllByTeamId_TeamAndApproved(team, false, pageable);
         return new PageDto<>(
                 nonApprovedPage.getNumber(),
                 nonApprovedPage.getTotalPages(),

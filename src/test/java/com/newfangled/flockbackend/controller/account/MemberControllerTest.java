@@ -4,12 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newfangled.flockbackend.controller.ControllerTestUtil;
 import com.newfangled.flockbackend.domain.member.controller.AccountController;
 import com.newfangled.flockbackend.domain.member.dto.response.ProfileDto;
+import com.newfangled.flockbackend.domain.member.dto.response.TeamListDto;
 import com.newfangled.flockbackend.domain.member.embed.OAuth;
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.member.service.AccountService;
 import com.newfangled.flockbackend.domain.member.service.AuthDetailsService;
 import com.newfangled.flockbackend.domain.member.type.UserRole;
+import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
@@ -298,17 +300,16 @@ class MemberControllerTest {
                     new TeamId(team(i, ControllerTestUtil.randomString()), member), Role.Leader, true)
             );
         }
-        List<NameDto> dtoList = results.stream()
+        List<TeamDto> dtoList = results.stream()
                 .map(TeamMember::getTeamId)
-                .map(TeamId::getMember)
-                .map(Member::getCompany)
-                .map(NameDto::new)
+                .map(TeamId::getTeam)
+                .map(TeamDto::new)
                 .collect(Collectors.toList());
-        ResultListDto<NameDto> listDto = new ResultListDto<>(dtoList);
+        TeamListDto teamListDto = new TeamListDto(dtoList);
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.findAllTeams(anyLong()))
-                .thenReturn(listDto);
+                .thenReturn(teamListDto);
 
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(
@@ -323,7 +324,7 @@ class MemberControllerTest {
 
     @DisplayName("사용자 팀 전체 조회 실패")
     @Test
-    void finaAllTeamsFailed() throws Exception {
+    void findAllTeamsFailed() throws Exception {
         // given
         Member member = account(oAuth());
         List<TeamMember> results = new ArrayList<>();
@@ -334,17 +335,16 @@ class MemberControllerTest {
                     )
             );
         }
-        List<NameDto> dtoList = results.stream()
+        List<TeamDto> dtoList = results.stream()
                 .map(TeamMember::getTeamId)
-                .map(TeamId::getMember)
-                .map(Member::getCompany)
-                .map(NameDto::new)
+                .map(TeamId::getTeam)
+                .map(TeamDto::new)
                 .collect(Collectors.toList());
-        ResultListDto<NameDto> listDto = new ResultListDto<>(dtoList);
+        TeamListDto teamListDto = new TeamListDto(dtoList);
 
         ControllerTestUtil.authenticateStumpMember(member, memberRepository);
         lenient().when(accountService.findAllTeams(anyLong()))
-                .thenReturn(listDto);
+                .thenReturn(teamListDto);
 
         // when
         ResultActions resultActions = ControllerTestUtil.resultActions(

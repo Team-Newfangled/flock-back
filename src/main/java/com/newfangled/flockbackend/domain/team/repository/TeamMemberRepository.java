@@ -1,5 +1,6 @@
 package com.newfangled.flockbackend.domain.team.repository;
 
+import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.global.embed.TeamId;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,6 @@ public interface TeamMemberRepository extends CrudRepository<TeamMember, TeamId>
 
     boolean existsByTeamId(TeamId teamId);
 
-    Page<TeamMember> findAllByTeamIdAndApproved(TeamId teamId, boolean approved, Pageable pageable);
+    Page<TeamMember> findAllByTeamId_TeamAndApproved(Team team, boolean approved, Pageable pageable);
 
 }

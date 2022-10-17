@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
@@ -16,7 +17,7 @@ import java.io.Serializable;
 @AllArgsConstructor @NoArgsConstructor
 public class DetailId implements Serializable {
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     private Todo todo;
 
 }

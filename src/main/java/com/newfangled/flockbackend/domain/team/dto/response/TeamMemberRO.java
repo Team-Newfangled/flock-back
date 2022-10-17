@@ -21,7 +21,7 @@ public class TeamMemberRO {
     public TeamMemberRO(TeamMember teamMember) {
         Member member = teamMember.getTeamId().getMember();
         this.id = member.getId();
-        this.name = member.getUsername();
+        this.name = member.getOAuth().getName();
         this.role = teamMember.getRole().name();
         this.approved = teamMember.isApproved();
         this.selfUrl = String.format("users/%d", id);

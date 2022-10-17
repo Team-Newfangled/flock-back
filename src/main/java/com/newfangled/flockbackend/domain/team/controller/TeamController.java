@@ -1,6 +1,7 @@
 package com.newfangled.flockbackend.domain.team.controller;
 
 import com.newfangled.flockbackend.domain.member.entity.Member;
+import com.newfangled.flockbackend.domain.team.dto.request.JoinMemberDto;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
@@ -32,7 +33,7 @@ public class TeamController {
 
     @GetMapping("{id}/projects")
     public PageDto<ProjectDto> findProjects(@PathVariable("id") long id,
-                                            @RequestParam("page") int page) {
+                                            @RequestParam(value = "page", defaultValue = "0") int page) {
         return teamService.findAllTeamProjects(id, page);
     }
 
@@ -47,9 +48,30 @@ public class TeamController {
     @GetMapping("/{id}/members")
     public PageDto<TeamMemberRO> findMembers(Authentication authentication,
                                              @PathVariable("id") long id,
-                                             @RequestParam int page) {
+                                             @RequestParam(value = "page", defaultValue = "0") int page) {
         return teamService.findAllMember(
                 (Member) authentication.getPrincipal(), id, page
+        );
+    }
+
+    @PatchMapping("/{id}/join")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void approveJoinMember(@PathVariable("id") long id,
+                                  Authentication authentication,
+                                  @RequestBody JoinMemberDto joinMemberDto) {
+        teamService.approveTeamMember(
+                (Member) authentication.getPrincipal(),
+                id, joinMemberDto.getMemberId()
+        );
+    }
+
+    @GetMapping("/{id}/waiting")
+    public PageDto<TeamMemberRO> findWaitingMember(
+            @PathVariable("id") long id, Authentication authentication,
+            @RequestParam(value = "page", defaultValue = "0") int page) {
+        return teamService.findNonApprovedMembers(
+                (Member) authentication.getPrincipal(),
+                id, page
         );
     }
 

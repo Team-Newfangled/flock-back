@@ -69,7 +69,7 @@ public class BoardController {
 
     @GetMapping("/projects/{id}/boards")
     public PageDto<BoardDto> findBoardPage(@PathVariable("id") long id,
-                                           @RequestParam("page") int page) {
+                                           @RequestParam(value = "page", defaultValue = "0") int page) {
         return boardService.findBoardPage(id, page);
     }
 
@@ -96,7 +96,7 @@ public class BoardController {
 
     @GetMapping("/board/{id}/comments")
     public PageDto<CommentDto> findCommentPage(@PathVariable("id") long id,
-                                               @RequestParam int page) {
+                                               @RequestParam(value = "page", defaultValue = "0") int page) {
         return boardCommentService.findAllComments(id, page);
     }
 

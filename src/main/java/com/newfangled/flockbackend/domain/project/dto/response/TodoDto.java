@@ -1,5 +1,6 @@
 package com.newfangled.flockbackend.domain.project.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.newfangled.flockbackend.domain.project.embed.TodoId;
 import com.newfangled.flockbackend.domain.project.entity.sub.Todo;
@@ -22,9 +23,11 @@ public class TodoDto {
     private long writerId;
 
     @JsonProperty("start-date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate startDate;
 
     @JsonProperty("end-date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate endDate;
 
     private boolean completed;
@@ -40,5 +43,4 @@ public class TodoDto {
         this.endDate = todoDetail.getEndDate();
         this.completed = todo.isCompleted();
     }
-
 }
