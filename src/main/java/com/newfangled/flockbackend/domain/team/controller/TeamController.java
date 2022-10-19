@@ -2,6 +2,7 @@ package com.newfangled.flockbackend.domain.team.controller;
 
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.team.dto.request.JoinMemberDto;
+import com.newfangled.flockbackend.domain.team.dto.response.MemberRoleRO;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
@@ -29,6 +30,14 @@ public class TeamController {
     public TeamDto createTeam(Authentication authentication,
                               @RequestBody @Valid final NameDto nameDto) {
         return teamService.createTeam((Member) authentication.getPrincipal(), nameDto);
+    }
+
+    @GetMapping("/{id}")
+    public MemberRoleRO findRoleById(Authentication authentication,
+                                     @PathVariable long id) {
+        return teamService.findRoleById(
+                (Member) authentication.getPrincipal(), id
+        );
     }
 
     @GetMapping("{id}/projects")

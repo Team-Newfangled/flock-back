@@ -4,6 +4,7 @@ import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
+import com.newfangled.flockbackend.domain.team.dto.response.MemberRoleRO;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
@@ -69,7 +70,6 @@ public class TeamService {
         if (leader.getRole() != Role.Leader) {
             throw new TeamMember.NoPermissionException();
         }
-
     }
 
     public PageDto<TeamMemberRO> findAllMember(Member member, long id, int page) {
@@ -148,6 +148,13 @@ public class TeamService {
 
     public TeamDto findTeamById(long teamId) {
         return new TeamDto(findById(teamId));
+    }
+
+    public MemberRoleRO findRoleById(Member member, long teamId) {
+        TeamId team = new TeamId(findById(teamId), member);
+        TeamMember teamMember = teamMemberRepository.findByTeamId(team)
+                .orElseThrow(TeamMember.NoMemberException::new);
+        return new MemberRoleRO(teamMember.getRole().name());
     }
 
     @Transactional(readOnly = true)

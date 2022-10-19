@@ -16,12 +16,12 @@ public class TodoModifyDto {
     @Nullable
     private String content;
 
-    @JsonProperty("start-date")
+    @JsonProperty("start_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Nullable
     private LocalDate startDate;
 
-    @JsonProperty("end-date")
+    @JsonProperty("end_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Nullable
     private LocalDate endDate;

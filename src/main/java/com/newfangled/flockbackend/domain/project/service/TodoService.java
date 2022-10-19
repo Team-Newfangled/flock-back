@@ -101,6 +101,7 @@ public class TodoService {
         Project project = todo.getTodoId().getProject();
         validateMember(project, member);
         todo.setCompleted(todoCompleteDto.isComplete());
+        todoRepository.save(todo);
         return new LinkListDto(
                 "할 일을 완료했습니다.",
                 List.of(new LinkDto("self", "GET", String.format("/todo/%d", todoId)))
