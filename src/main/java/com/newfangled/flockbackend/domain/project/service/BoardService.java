@@ -17,7 +17,6 @@ import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.dto.response.PageDto;
 import com.newfangled.flockbackend.global.embed.TeamId;
-import com.newfangled.flockbackend.global.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +25,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +37,7 @@ public class BoardService {
     private final TeamMemberRepository teamMemberRepository;
     private final ProjectRepository projectRepository;
     private final BoardFileRepository boardFileRepository;
+    private final BoardCommentService boardCommentService;
 
     public LinkListDto saveFile(Member member, long boardId,
                                 ContentDto contentDto) {
@@ -77,6 +76,7 @@ public class BoardService {
     public void deleteBoard(Member member, long boardId) {
         Board board = findById(boardId);
         validateMember(board.getProject(), member);
+        boardCommentService.deleteCommentByBoard(board);
         boardRepository.delete(board);
     }
 

@@ -106,6 +106,9 @@ public class AuthService {
                 .pictureUrl(userInfoResponse.getProfileImageUrl())
                 .email(userInfoResponse.getEmail())
                 .build();
+
+
+
         Member account = Member.builder()
                 .role(UserRole.MEMBER)
                 .oAuth(oAuth)

@@ -12,4 +12,6 @@ public interface BoardCommentRepository extends JpaRepository<BoardComment, Long
 
     Page<BoardComment> findAllByBoard(Board board, Pageable pageable);
 
+    void deleteAllByBoard(Board board);
+
 }

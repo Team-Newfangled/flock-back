@@ -59,6 +59,10 @@ public class BoardCommentService {
         boardCommentRepository.delete(boardComment);
     }
 
+    public void deleteCommentByBoard(Board board) {
+        boardCommentRepository.deleteAllByBoard(board);
+    }
+
     @Transactional(readOnly = true)
     protected TeamMember validateMember(Project project, Member member) {
         Team team = project.getTeam();
