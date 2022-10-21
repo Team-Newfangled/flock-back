@@ -4,6 +4,7 @@ import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.repository.ProjectRepository;
+import com.newfangled.flockbackend.domain.project.service.ProjectService;
 import com.newfangled.flockbackend.domain.team.dto.response.MemberRoleRO;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
@@ -32,6 +33,7 @@ public class TeamService {
     private final TeamMemberRepository teamMemberRepository;
     private final ProjectRepository projectRepository;
     private final MemberRepository memberRepository;
+    private final ProjectService projectService;
 
     private TeamId getTeamId(Team team, Member member) {
         return new TeamId(team, member);
@@ -56,10 +58,12 @@ public class TeamService {
     // 승인 및 미승인 팀원까지 사용할 수 있음
     // 추후 로직이 나뉠 수도 있음
     public void expulsionMember(Member member, long id, long userId) {
-        TeamId teamId = getTeamId(findById(id), member);
+        Team team = findById(id);
+        TeamId teamId = getTeamId(team, member);
         validatePermission(teamId);
-        TeamMember target = teamMemberRepository.findByTeamId_Member_Id(userId)
-                        .orElseThrow(TeamMember.NoMemberException::new);
+        TeamMember target = teamMemberRepository
+                .findByTeamId_Member_IdAndTeamId_Team(userId, team)
+                .orElseThrow(TeamMember.NoMemberException::new);
         teamMemberRepository.delete(target);
     }
 
@@ -155,6 +159,22 @@ public class TeamService {
         TeamMember teamMember = teamMemberRepository.findByTeamId(team)
                 .orElseThrow(TeamMember.NoMemberException::new);
         return new MemberRoleRO(teamMember.getRole().name());
+    }
+    
+    public void deleteTeam(Member member, long id) {
+        Team team = findById(id);
+        TeamId teamId = new TeamId(team, member);
+        TeamMember teamMember = teamMemberRepository.findByTeamId(teamId)
+                .orElseThrow(TeamMember.NoMemberException::new);
+        if (teamMember.getRole() != Role.Leader) {
+            throw new TeamMember.NoPermissionException();
+        }
+
+        System.out.println("됐냐");
+        projectService.deleteAllProjectsByTeam(member, team);
+        System.out.println("젭알");
+        teamMemberRepository.deleteAllByTeamId_Team(team);
+        teamRepository.delete(team);
     }
 
     @Transactional(readOnly = true)

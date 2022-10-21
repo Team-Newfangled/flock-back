@@ -77,7 +77,16 @@ public class BoardService {
         Board board = findById(boardId);
         validateMember(board.getProject(), member);
         boardCommentService.deleteCommentByBoard(board);
+        boardFileRepository.deleteAllByBoard(board);
         boardRepository.delete(board);
+    }
+
+    public void deleteAllBoard(Project project) {
+        boardCommentService.deleteAllCommentByProject(project);
+        System.out.println("뭐ㅓㅓㅓ");
+        boardFileRepository.deleteAllByBoard_Project(project);
+        System.out.println("기도하세요");
+        boardRepository.deleteAllByProject(project);
     }
 
     public BoardDto findBoard(long boardId) {

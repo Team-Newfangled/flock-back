@@ -94,4 +94,13 @@ public class TeamController {
                 id, nameDto
         );
     }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTeam(Authentication authentication,
+                           @PathVariable("id") long id) {
+        teamService.deleteTeam((Member) authentication.getPrincipal(), id);
+    }
+
+
 }

@@ -94,6 +94,11 @@ public class TodoService {
         todoDetailRepository.deleteById(new DetailId(todo));
         todoRepository.delete(todo);
     }
+    
+    public void deleteAllTodoByProject(Project project) {
+        todoDetailRepository.deleteAllByDetailId_Todo_TodoId_Project(project);
+        todoRepository.deleteAllByTodoId_Project(project);
+    }
 
     public LinkListDto completeTodo(Member member, long todoId,
                                     final TodoCompleteDto todoCompleteDto) {

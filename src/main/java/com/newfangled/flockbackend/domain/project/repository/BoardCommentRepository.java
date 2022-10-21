@@ -1,5 +1,6 @@
 package com.newfangled.flockbackend.domain.project.repository;
 
+import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.entity.sub.Board;
 import com.newfangled.flockbackend.domain.project.entity.sub.BoardComment;
 import org.springframework.data.domain.Page;
@@ -13,5 +14,7 @@ public interface BoardCommentRepository extends JpaRepository<BoardComment, Long
     Page<BoardComment> findAllByBoard(Board board, Pageable pageable);
 
     void deleteAllByBoard(Board board);
+
+    void deleteAllByBoard_Project(Project project);
 
 }

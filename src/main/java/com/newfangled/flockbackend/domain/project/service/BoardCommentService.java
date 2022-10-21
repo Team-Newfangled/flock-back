@@ -63,6 +63,10 @@ public class BoardCommentService {
         boardCommentRepository.deleteAllByBoard(board);
     }
 
+    public void deleteAllCommentByProject(Project project) {
+        boardCommentRepository.deleteAllByBoard_Project(project);
+    }
+
     @Transactional(readOnly = true)
     protected TeamMember validateMember(Project project, Member member) {
         Team team = project.getTeam();
