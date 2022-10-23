@@ -35,5 +35,4 @@ public interface TeamMemberRepository extends CrudRepository<TeamMember, TeamId>
     @Modifying
     @Query("delete from TeamMember t where t.teamId.team = ?1")
     void deleteAllByTeamId_Team(Team teamId_team);
-
 }

@@ -19,7 +19,8 @@ public class TodoId implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     private Project project;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private TodoDetail todoDetail;
 
 }
