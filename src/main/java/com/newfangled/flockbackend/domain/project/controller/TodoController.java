@@ -34,7 +34,7 @@ public class TodoController {
         );
     }
 
-    @PutMapping("/todo/{id}")
+    @PatchMapping("/todo/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public LinkListDto modifyTodo(Authentication authentication,
                                   @PathVariable("id") long id,
@@ -51,7 +51,7 @@ public class TodoController {
         todoService.deleteTodo((Member) authentication.getPrincipal(), id);
     }
 
-    @PatchMapping("/todo/{id}")
+    @PatchMapping("/todo/complete/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public LinkListDto completeTodo(Authentication authentication,
                                     @PathVariable("id") long id,

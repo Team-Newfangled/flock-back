@@ -94,6 +94,11 @@ public class TodoService {
         todoDetailRepository.deleteById(new DetailId(todo));
         todoRepository.delete(todo);
     }
+    
+    public void deleteAllTodoByProject(Project project) {
+        todoDetailRepository.deleteAllByDetailId_Todo_TodoId_Project(project);
+        todoRepository.deleteAllByTodoId_Project(project);
+    }
 
     public LinkListDto completeTodo(Member member, long todoId,
                                     final TodoCompleteDto todoCompleteDto) {
@@ -101,6 +106,7 @@ public class TodoService {
         Project project = todo.getTodoId().getProject();
         validateMember(project, member);
         todo.setCompleted(todoCompleteDto.isComplete());
+        todoRepository.save(todo);
         return new LinkListDto(
                 "할 일을 완료했습니다.",
                 List.of(new LinkDto("self", "GET", String.format("/todo/%d", todoId)))

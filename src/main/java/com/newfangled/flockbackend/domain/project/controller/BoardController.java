@@ -83,7 +83,7 @@ public class BoardController {
         );
     }
 
-    @PostMapping("/board/{id}/comments")
+    @PostMapping("/boards/{id}/comments")
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto writeComment(Authentication authentication,
                                    @PathVariable("id") long id,
@@ -94,7 +94,7 @@ public class BoardController {
         );
     }
 
-    @GetMapping("/board/{id}/comments")
+    @GetMapping("/boards/{id}/comments")
     public PageDto<CommentDto> findCommentPage(@PathVariable("id") long id,
                                                @RequestParam(value = "page", defaultValue = "0") int page) {
         return boardCommentService.findAllComments(id, page);

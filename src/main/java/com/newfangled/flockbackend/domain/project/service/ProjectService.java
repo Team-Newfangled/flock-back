@@ -30,6 +30,8 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final UriValidator uriValidator;
+    private final BoardService boardService;
+    private final TodoService todoService;
 
     @Transactional(readOnly = true)
     protected Project findById(long id) {
@@ -44,7 +46,20 @@ public class ProjectService {
     public void deleteProject(Member member, long projectId) {
         Project project = findById(projectId);
         validateLeader(project, member);
-        projectRepository.delete(findById(projectId));
+        delete(project);
+    }
+
+    protected void delete(Project project) {
+        boardService.deleteAllBoard(project);
+        todoService.deleteAllTodoByProject(project);
+        projectRepository.delete(project);
+    }
+
+    public void deleteAllProjectsByTeam(Member member, Team team) {
+        List<Project> projects = projectRepository.findAllByTeam(team);
+        for (Project project : projects) {
+            delete(project);
+        }
     }
 
     public LinkListDto modifyProject(Member member, long projectId,

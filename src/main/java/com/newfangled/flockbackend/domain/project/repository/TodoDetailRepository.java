@@ -19,4 +19,7 @@ public interface TodoDetailRepository extends JpaRepository<TodoDetail, DetailId
     List<TodoDetail> findByStartDateBetween(
             Long projectId, LocalDate startDate, LocalDate startDate2
     );
+
+    void deleteAllByDetailId_Todo_TodoId_Project(Project detailId_todo_todoId_project);
+
 }
