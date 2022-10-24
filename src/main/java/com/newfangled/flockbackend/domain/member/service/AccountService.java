@@ -5,20 +5,16 @@ import com.newfangled.flockbackend.domain.member.dto.response.TeamListDto;
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.member.repository.MemberRepository;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
-import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.global.dto.NameDto;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
-import com.newfangled.flockbackend.global.dto.response.ResultListDto;
-import com.newfangled.flockbackend.global.embed.TeamId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,8 +74,7 @@ public class AccountService {
         List<TeamDto> teams = teamMemberRepository
                 .findDistinctByTeamId_Member_Id(accountId)
                 .stream()
-                .map(TeamMember::getTeamId)
-                .map(TeamId::getTeam)
+                .map(TeamMember::getTeam)
                 .map(TeamDto::new)
                 .collect(Collectors.toList());
         return new TeamListDto(teams);

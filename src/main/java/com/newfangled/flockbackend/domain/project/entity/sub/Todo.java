@@ -1,34 +1,29 @@
 package com.newfangled.flockbackend.domain.project.entity.sub;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.newfangled.flockbackend.domain.project.embed.TodoId;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.global.exception.BusinessException;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.http.HttpStatus;
 
 import javax.persistence.*;
 
 @Getter
-@AllArgsConstructor @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor @NoArgsConstructor
 public class Todo {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Embedded
-    @JsonIgnore
-    private TodoId todoId;
+    @ManyToOne
+    private Project project;
 
     private boolean completed;
 
-    public void setTodoId(TodoId todoId) {
-        this.todoId = todoId;
-    }
-
+    @Setter
+    @OneToOne(mappedBy = "todo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TodoDetail todoDetail;
 
     public void setCompleted(boolean completed) {
         this.completed = completed;

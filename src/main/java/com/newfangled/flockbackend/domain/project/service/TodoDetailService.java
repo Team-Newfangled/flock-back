@@ -2,7 +2,6 @@ package com.newfangled.flockbackend.domain.project.service;
 
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.project.dto.response.TodoDto;
-import com.newfangled.flockbackend.domain.project.embed.DetailId;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.entity.sub.Todo;
 import com.newfangled.flockbackend.domain.project.entity.sub.TodoDetail;
@@ -16,7 +15,6 @@ import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.dto.response.ResultListDto;
-import com.newfangled.flockbackend.global.embed.TeamId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +40,9 @@ public class TodoDetailService {
         Project project = findProjectById(projectId);
         validateMember(project, member);
         Todo todo = findById(todoId);
-        TodoDetail todoDetail = todo.getTodoId().getTodoDetail();
+        TodoDetail todoDetail = todo.getTodoDetail();
         todoDetail.modifyColor(contentDto.getContent());
+        todoDetailRepository.save(todoDetail);
 
         return new LinkListDto(
                 "색을 변경하였습니다.",
@@ -63,8 +62,7 @@ public class TodoDetailService {
         );
 
         return new ResultListDto<>(
-                todoDetails.stream().map(TodoDetail::getDetailId)
-                        .map(DetailId::getTodo)
+                todoDetails.stream().map(TodoDetail::getTodo)
                         .map(TodoDto::new)
                         .collect(Collectors.toList())
         );
@@ -86,7 +84,7 @@ public class TodoDetailService {
     protected void validateMember(Project project, Member member) {
         Team team = project.getTeam();
         TeamMember teamMember = teamMemberRepository
-                .findByTeamId(new TeamId(team, member))
+                .findByTeamAndMember(team, member)
                 .orElseThrow(TeamMember.NoPermissionException::new);
         if (!teamMember.isApproved()) {
             throw new TeamMember.NoPermissionException();

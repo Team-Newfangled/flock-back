@@ -2,7 +2,6 @@ package com.newfangled.flockbackend.domain.project.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.newfangled.flockbackend.domain.project.embed.TodoId;
 import com.newfangled.flockbackend.domain.project.entity.sub.Todo;
 import com.newfangled.flockbackend.domain.project.entity.sub.TodoDetail;
 import lombok.AllArgsConstructor;
@@ -34,11 +33,10 @@ public class TodoDto {
 
     public TodoDto(Todo todo) {
         this.id = todo.getId();
-        TodoId todoId = todo.getTodoId();
-        TodoDetail todoDetail = todoId.getTodoDetail();
+        TodoDetail todoDetail = todo.getTodoDetail();
         this.content = todoDetail.getContent();
         this.color = todoDetail.getColor();
-        this.writerId = todoDetail.getTeamMember().getTeamId().getMember().getId();
+        this.writerId = todoDetail.getTeamMember().getMember().getId();
         this.startDate = todoDetail.getStartDate();
         this.endDate = todoDetail.getEndDate();
         this.completed = todo.isCompleted();

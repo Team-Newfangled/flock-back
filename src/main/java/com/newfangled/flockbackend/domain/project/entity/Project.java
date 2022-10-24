@@ -1,7 +1,6 @@
 package com.newfangled.flockbackend.domain.project.entity;
 
 import com.newfangled.flockbackend.domain.team.entity.Team;
-import com.newfangled.flockbackend.global.embed.TeamId;
 import com.newfangled.flockbackend.global.exception.BusinessException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +17,7 @@ public class Project {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     private Team team;
 
     @Column(name = "project_name")

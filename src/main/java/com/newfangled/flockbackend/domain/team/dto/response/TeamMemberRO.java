@@ -19,7 +19,7 @@ public class TeamMemberRO {
     private String selfUrl;
 
     public TeamMemberRO(TeamMember teamMember) {
-        Member member = teamMember.getTeamId().getMember();
+        Member member = teamMember.getMember();
         this.id = member.getId();
         this.name = member.getOAuth().getName();
         this.role = teamMember.getRole().name();

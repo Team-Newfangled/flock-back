@@ -16,7 +16,6 @@ import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.dto.response.PageDto;
-import com.newfangled.flockbackend.global.embed.TeamId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -56,9 +55,11 @@ public class BoardService {
                               ContentDto contentDto) {
         Project project = findProjectById(projectId);
         TeamMember teamMember = validateMember(project, member);
-        Board board = new Board(
-                null, project, teamMember, contentDto.getContent()
-        );
+        Board board = Board.builder()
+                .project(project)
+                .teamMember(teamMember)
+                .content(contentDto.getContent())
+                .build();
         return new BoardDto(boardRepository.save(board), null);
     }
 
@@ -82,10 +83,6 @@ public class BoardService {
     }
 
     public void deleteAllBoard(Project project) {
-        boardCommentService.deleteAllCommentByProject(project);
-        System.out.println("뭐ㅓㅓㅓ");
-        boardFileRepository.deleteAllByBoard_Project(project);
-        System.out.println("기도하세요");
         boardRepository.deleteAllByProject(project);
     }
 
@@ -137,7 +134,7 @@ public class BoardService {
     protected TeamMember validateMember(Project project, Member member) {
         Team team = project.getTeam();
         TeamMember teamMember = teamMemberRepository
-                .findByTeamId(new TeamId(team, member))
+                .findByTeamAndMember(team, member)
                 .orElseThrow(TeamMember.NoPermissionException::new);
         if (!teamMember.isApproved()) {
             throw new TeamMember.NoPermissionException();

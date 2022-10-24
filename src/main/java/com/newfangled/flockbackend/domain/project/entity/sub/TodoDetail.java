@@ -1,30 +1,27 @@
 package com.newfangled.flockbackend.domain.project.entity.sub;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.newfangled.flockbackend.domain.project.embed.DetailId;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 
 @Getter
-@AllArgsConstructor @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor @NoArgsConstructor
 public class TodoDetail {
 
-    @JsonIgnoreProperties
-    @EmbeddedId
-    private DetailId detailId;
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private TeamMember teamMember;
+
+    @Setter
+    @OneToOne
+    private Todo todo;
 
     private String content;
 

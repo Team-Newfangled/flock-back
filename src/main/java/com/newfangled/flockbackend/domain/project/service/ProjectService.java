@@ -12,7 +12,6 @@ import com.newfangled.flockbackend.global.dto.NameDto;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
-import com.newfangled.flockbackend.global.embed.TeamId;
 import com.newfangled.flockbackend.global.exception.BusinessException;
 import com.newfangled.flockbackend.global.infra.UriValidator;
 import lombok.RequiredArgsConstructor;
@@ -51,11 +50,13 @@ public class ProjectService {
 
     protected void delete(Project project) {
         boardService.deleteAllBoard(project);
+        System.out.println("피드 삭제 명령");
         todoService.deleteAllTodoByProject(project);
+        System.out.println("할 일 삭제 명령");
         projectRepository.delete(project);
     }
 
-    public void deleteAllProjectsByTeam(Member member, Team team) {
+    public void deleteAllProjectsByTeam(Team team) {
         List<Project> projects = projectRepository.findAllByTeam(team);
         for (Project project : projects) {
             delete(project);
@@ -97,7 +98,7 @@ public class ProjectService {
     protected void validateLeader(Project project, Member member) {
         Team team = project.getTeam();
         TeamMember teamMember = teamMemberRepository
-                .findByTeamId(new TeamId(team, member))
+                .findByTeamAndMember(team, member)
                 .orElseThrow(TeamMember.NoPermissionException::new);
         if (teamMember.getRole() != Role.Leader) {
             throw new TeamMember.NoPermissionException();

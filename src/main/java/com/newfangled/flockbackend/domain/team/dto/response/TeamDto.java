@@ -19,5 +19,4 @@ public class TeamDto {
         this.teamId = team.getId();
         this.teamName = team.getName();
     }
-
 }

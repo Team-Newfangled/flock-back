@@ -12,7 +12,6 @@ import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.PageDto;
-import com.newfangled.flockbackend.global.embed.TeamId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -63,15 +62,11 @@ public class BoardCommentService {
         boardCommentRepository.deleteAllByBoard(board);
     }
 
-    public void deleteAllCommentByProject(Project project) {
-        boardCommentRepository.deleteAllByBoard_Project(project);
-    }
-
     @Transactional(readOnly = true)
     protected TeamMember validateMember(Project project, Member member) {
         Team team = project.getTeam();
         TeamMember teamMember = teamMemberRepository
-                .findByTeamId(new TeamId(team, member))
+                .findByTeamAndMember(team, member)
                 .orElseThrow(TeamMember.NoPermissionException::new);
         if (!teamMember.isApproved()) {
             // 미승인 회원이라면

@@ -4,8 +4,6 @@ import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.project.dto.request.TodoCompleteDto;
 import com.newfangled.flockbackend.domain.project.dto.request.TodoModifyDto;
 import com.newfangled.flockbackend.domain.project.dto.response.TodoDto;
-import com.newfangled.flockbackend.domain.project.embed.DetailId;
-import com.newfangled.flockbackend.domain.project.embed.TodoId;
 import com.newfangled.flockbackend.domain.project.entity.Project;
 import com.newfangled.flockbackend.domain.project.entity.sub.Todo;
 import com.newfangled.flockbackend.domain.project.entity.sub.TodoDetail;
@@ -19,7 +17,6 @@ import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.dto.response.PageDto;
-import com.newfangled.flockbackend.global.embed.TeamId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -47,34 +44,32 @@ public class TodoService {
         Project project = findProjectById(projectId);
         TeamMember teamMember = validateMember(project, member);
 
-        Todo todo = new Todo(
-                null,
-                null,
-                false
-        );
+        Todo todo = Todo.builder()
+                .project(project)
+                .completed(false)
+                .build();
         Todo savedTodo = todoRepository.save(todo);
         LocalDate date = LocalDate.now();
 
-        TodoDetail todoDetail = new TodoDetail(
-                new DetailId(todo),
-                teamMember,
-                contentDto.getContent(),
-                getRandomHexColor(),
-                date,
-                date.plusDays(3)
-        );
+        TodoDetail todoDetail = TodoDetail.builder()
+                .teamMember(teamMember)
+                .content(contentDto.getContent())
+                .color(getRandomHexColor())
+                .startDate(date)
+                .endDate(date.plusDays(3))
+                .build();
         TodoDetail savedDetail = todoDetailRepository.save(todoDetail);
-        todo.setTodoId(new TodoId(project, savedDetail));
-
+        todo.setTodoDetail(savedDetail);
+        savedDetail.setTodo(todo);
         return new TodoDto(savedTodo);
     }
 
     public LinkListDto modifyTodo(Member member, long todoId,
                                   TodoModifyDto todoModifyDto) {
         Todo todo = findById(todoId);
-        Project project = todo.getTodoId().getProject();
+        Project project = todo.getProject();
         validateMember(project, member);
-        TodoDetail todoDetail = todo.getTodoId().getTodoDetail();
+        TodoDetail todoDetail = todo.getTodoDetail();
         todoDetail.modifyDetail(
                 todoModifyDto.getContent(),
                 todoModifyDto.getStartDate(),
@@ -89,21 +84,19 @@ public class TodoService {
     
     public void deleteTodo(Member member, long todoId) {
         Todo todo = findById(todoId);
-        Project project = todo.getTodoId().getProject();
+        Project project = todo.getProject();
         validateMember(project, member);
-        todoDetailRepository.deleteById(new DetailId(todo));
         todoRepository.delete(todo);
     }
     
     public void deleteAllTodoByProject(Project project) {
-        todoDetailRepository.deleteAllByDetailId_Todo_TodoId_Project(project);
-        todoRepository.deleteAllByTodoId_Project(project);
+        todoRepository.deleteAllByProject(project);
     }
 
     public LinkListDto completeTodo(Member member, long todoId,
                                     final TodoCompleteDto todoCompleteDto) {
         Todo todo = findById(todoId);
-        Project project = todo.getTodoId().getProject();
+        Project project = todo.getProject();
         validateMember(project, member);
         todo.setCompleted(todoCompleteDto.isComplete());
         todoRepository.save(todo);
@@ -141,7 +134,7 @@ public class TodoService {
     protected TeamMember validateMember(Project project, Member member) {
         Team team = project.getTeam();
         return teamMemberRepository
-                .findByTeamId(new TeamId(team, member))
+                .findByTeamAndMember(team, member)
                 .orElseThrow(TeamMember.NoPermissionException::new);
     }
 

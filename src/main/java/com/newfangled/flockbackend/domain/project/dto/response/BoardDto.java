@@ -2,7 +2,6 @@ package com.newfangled.flockbackend.domain.project.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.newfangled.flockbackend.domain.project.entity.sub.Board;
-import com.newfangled.flockbackend.domain.project.entity.sub.BoardFile;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +24,7 @@ public class BoardDto {
     public BoardDto(Board board, List<FileDto> files) {
         this.id = board.getId();
         this.content = board.getContent();
-        this.writerId = board.getTeamMember().getTeamId().getMember().getId();
+        this.writerId = board.getTeamMember().getMember().getId();
         this.files = (files == null || files.size() == 0)
                 ? new LinkedList<>()
                 : files;

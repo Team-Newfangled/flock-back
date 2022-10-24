@@ -11,11 +11,11 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TodoRepository extends JpaRepository<Todo, Long> {
 
-    @Query("select t from Todo t where t.todoId.project = ?1 and t.todoId.todoDetail.teamMember.teamId.member.id = ?2")
+    @Query("select t from Todo t where t.project = ?1 and t.todoDetail.teamMember.member.id = ?2")
     Page<Todo> findAllByProjectAndMemberId(
             Project todoId_project, Long memberId, Pageable pageable
     );
 
-    void deleteAllByTodoId_Project(Project todoId_project);
+    void deleteAllByProject(Project todoId_project);
 
 }
