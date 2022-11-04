@@ -19,12 +19,15 @@ public class BoardDto {
     @JsonProperty("writer-id")
     private long writerId;
 
+    private String writer;
+
     private List<FileDto> files;
 
     public BoardDto(Board board, List<FileDto> files) {
         this.id = board.getId();
         this.content = board.getContent();
         this.writerId = board.getTeamMember().getMember().getId();
+        this.writer = board.getTeamMember().getMember().getOAuth().getName();
         this.files = (files == null || files.size() == 0)
                 ? new LinkedList<>()
                 : files;

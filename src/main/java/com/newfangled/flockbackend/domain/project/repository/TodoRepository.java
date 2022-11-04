@@ -18,4 +18,6 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
 
     void deleteAllByProject(Project todoId_project);
 
+    Page<Todo> findAllByProject(Project project, Pageable pageable);
+
 }

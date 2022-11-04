@@ -3,10 +3,8 @@ package com.newfangled.flockbackend.domain.team.controller;
 import com.newfangled.flockbackend.domain.member.service.AccountService;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
 import com.newfangled.flockbackend.domain.team.service.TeamService;
-import com.newfangled.flockbackend.global.exception.BusinessException;
 import com.newfangled.flockbackend.global.infra.mail.MailService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +21,7 @@ public class TeamJoinController {
     public String sendJoinMail(@PathVariable("id") long id, String email) {
         // 이메일 전송 로직
         if (!mailService.isValidEmailAddress(email)) {
-            throw new BusinessException(HttpStatus.CONFLICT, "유효한 이메일이 아닙니다.");
+            return "redirect:/emailInvalid";
         }
         TeamDto teamDto = teamService.findTeamById(id);
         long memberId = accountService.findByEmail(email);

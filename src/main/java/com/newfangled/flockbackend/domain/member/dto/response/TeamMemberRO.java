@@ -1,4 +1,4 @@
-package com.newfangled.flockbackend.domain.team.dto.response;
+package com.newfangled.flockbackend.domain.member.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.newfangled.flockbackend.domain.member.entity.Member;

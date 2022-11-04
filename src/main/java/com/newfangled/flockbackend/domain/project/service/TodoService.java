@@ -13,6 +13,7 @@ import com.newfangled.flockbackend.domain.project.repository.TodoRepository;
 import com.newfangled.flockbackend.domain.team.entity.Team;
 import com.newfangled.flockbackend.domain.team.entity.TeamMember;
 import com.newfangled.flockbackend.domain.team.repository.TeamMemberRepository;
+import com.newfangled.flockbackend.domain.team.type.Role;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
@@ -43,6 +44,9 @@ public class TodoService {
     public TodoDto writeTodo(Member member, long projectId, ContentDto contentDto) {
         Project project = findProjectById(projectId);
         TeamMember teamMember = validateMember(project, member);
+        if (teamMember.getRole() != Role.Leader) {
+            throw new TeamMember.NoPermissionException();
+        }
 
         Todo todo = Todo.builder()
                 .project(project)
@@ -68,8 +72,14 @@ public class TodoService {
                                   TodoModifyDto todoModifyDto) {
         Todo todo = findById(todoId);
         Project project = todo.getProject();
-        validateMember(project, member);
+        TeamMember teamMember = validateMember(project, member);
         TodoDetail todoDetail = todo.getTodoDetail();
+        final long manager = todoDetail.getTeamMember().getId();
+        if (teamMember.getId() != manager && teamMember.getRole() != Role.Leader) {
+            // 담당자도 아니고, 팀장도 아니라면, 권한 없음
+            throw new TeamMember.NoPermissionException();
+        }
+
         todoDetail.modifyDetail(
                 todoModifyDto.getContent(),
                 todoModifyDto.getStartDate(),
@@ -85,7 +95,11 @@ public class TodoService {
     public void deleteTodo(Member member, long todoId) {
         Todo todo = findById(todoId);
         Project project = todo.getProject();
-        validateMember(project, member);
+        TeamMember teamMember = validateMember(project, member);
+        if (teamMember.getRole() != Role.Leader) {
+            throw new TeamMember.NoPermissionException();
+        }
+
         todoRepository.delete(todo);
     }
     
@@ -106,13 +120,25 @@ public class TodoService {
         );
     }
 
-    public PageDto<TodoDto> findAllTodos(Member member, long projectId,
-                                   long userId, int page) {
+    public PageDto<TodoDto> findAllTodosByMember(Member member, long projectId,
+                                                 long userId, int page) {
         Project project = findProjectById(projectId);
         validateMember(project, member);
         Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
         Page<Todo> todos = todoRepository
                 .findAllByProjectAndMemberId(project, userId, pageable);
+        return new PageDto<>(
+                todos.getNumber(),
+                todos.getTotalPages(),
+                todos.stream().map(TodoDto::new).collect(Collectors.toList())
+        );
+    }
+
+    public PageDto<TodoDto> findAll(Member member, long projectId, int page) {
+        Project project = findProjectById(projectId);
+        validateMember(project, member);
+        Pageable pageable = PageRequest.of(page, 10, Sort.by("id").descending());
+        Page<Todo> todos = todoRepository.findAllByProject(project, pageable);
         return new PageDto<>(
                 todos.getNumber(),
                 todos.getTotalPages(),

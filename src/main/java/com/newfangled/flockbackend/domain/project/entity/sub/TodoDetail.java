@@ -16,6 +16,7 @@ public class TodoDetail {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     private TeamMember teamMember;
 
@@ -31,6 +32,10 @@ public class TodoDetail {
     private LocalDate startDate;
 
     private LocalDate endDate;
+
+    @Setter
+    @Builder.Default
+    private short percent = 0;
 
     public void modifyDetail(String content, LocalDate startDate,
                              LocalDate endDate) {

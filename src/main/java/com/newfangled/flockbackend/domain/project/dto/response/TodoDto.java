@@ -18,8 +18,8 @@ public class TodoDto {
     private String content;
     private String color;
 
-    @JsonProperty("writer_id")
-    private long writerId;
+    @JsonProperty("manager")
+    private long managerId;
 
     @JsonProperty("start-date")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
@@ -31,14 +31,17 @@ public class TodoDto {
 
     private boolean completed;
 
+    private short percent;
+
     public TodoDto(Todo todo) {
         this.id = todo.getId();
         TodoDetail todoDetail = todo.getTodoDetail();
         this.content = todoDetail.getContent();
         this.color = todoDetail.getColor();
-        this.writerId = todoDetail.getTeamMember().getMember().getId();
+        this.managerId = todoDetail.getTeamMember().getMember().getId();
         this.startDate = todoDetail.getStartDate();
         this.endDate = todoDetail.getEndDate();
         this.completed = todo.isCompleted();
+        this.percent = todoDetail.getPercent();
     }
 }

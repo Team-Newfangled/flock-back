@@ -5,7 +5,7 @@ import com.newfangled.flockbackend.domain.team.dto.request.JoinMemberDto;
 import com.newfangled.flockbackend.domain.team.dto.response.MemberRoleRO;
 import com.newfangled.flockbackend.domain.team.dto.response.ProjectDto;
 import com.newfangled.flockbackend.domain.team.dto.response.TeamDto;
-import com.newfangled.flockbackend.domain.team.dto.response.TeamMemberRO;
+import com.newfangled.flockbackend.domain.member.dto.response.TeamMemberRO;
 import com.newfangled.flockbackend.domain.team.service.TeamService;
 import com.newfangled.flockbackend.global.dto.NameDto;
 import com.newfangled.flockbackend.global.dto.response.PageDto;
@@ -101,6 +101,5 @@ public class TeamController {
                            @PathVariable("id") long id) {
         teamService.deleteTeam((Member) authentication.getPrincipal(), id);
     }
-
 
 }

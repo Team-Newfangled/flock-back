@@ -3,9 +3,11 @@ package com.newfangled.flockbackend.domain.project.controller;
 import com.newfangled.flockbackend.domain.member.entity.Member;
 import com.newfangled.flockbackend.domain.project.dto.request.TodoCompleteDto;
 import com.newfangled.flockbackend.domain.project.dto.request.TodoModifyDto;
+import com.newfangled.flockbackend.domain.project.dto.request.TodoPercentDto;
 import com.newfangled.flockbackend.domain.project.dto.response.TodoDto;
 import com.newfangled.flockbackend.domain.project.service.TodoDetailService;
 import com.newfangled.flockbackend.domain.project.service.TodoService;
+import com.newfangled.flockbackend.domain.team.dto.request.JoinMemberDto;
 import com.newfangled.flockbackend.global.dto.request.ContentDto;
 import com.newfangled.flockbackend.global.dto.response.LinkListDto;
 import com.newfangled.flockbackend.global.dto.response.PageDto;
@@ -62,12 +64,22 @@ public class TodoController {
     }
 
     @GetMapping("/projects/{project-id}/team-member/{user-id}/todo")
-    public PageDto<TodoDto> findAllTodos(Authentication authentication,
+    public PageDto<TodoDto> findAllTodosByMember(Authentication authentication,
                                          @PathVariable("project-id") long projectId,
                                          @PathVariable("user-id") long userId,
-                                         @RequestParam int page) {
-        return todoService.findAllTodos(
+                                         @RequestParam(defaultValue = "0") int page) {
+        return todoService.findAllTodosByMember(
                 (Member) authentication.getPrincipal(), projectId, userId, page
+        );
+    }
+
+    @GetMapping("/projects/{id}/todos")
+    public PageDto<TodoDto> findAllTodos(Authentication authentication,
+                                         @PathVariable("id") long projectId,
+                                         @RequestParam(defaultValue = "0") int page) {
+        return todoService.findAll(
+                (Member) authentication.getPrincipal(),
+                projectId, page
         );
     }
 
@@ -95,5 +107,27 @@ public class TodoController {
                                                 @RequestParam int year,
                                                 @RequestParam int month) {
         return todoDetailService.findDetails(id, year, month);
+    }
+
+    @PatchMapping("/todo/{todo-id}/percent")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public LinkListDto modifyPercent(Authentication authentication,
+                                     @PathVariable("todo-id") long todoId,
+                                     @RequestBody @Valid TodoPercentDto todoPercentDto) {
+        return todoDetailService.modifyPercent(
+                (Member) authentication.getPrincipal(),
+                todoId, todoPercentDto
+        );
+    }
+
+    @PatchMapping("/todo/{todo-id}/manager")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public LinkListDto modifyManager(Authentication authentication,
+                                     @PathVariable("todo-id") long todoId,
+                                     @RequestBody @Valid JoinMemberDto joinMemberDto) {
+        return todoDetailService.modifyManager(
+                (Member) authentication.getPrincipal(),
+                todoId, joinMemberDto
+        );
     }
 }

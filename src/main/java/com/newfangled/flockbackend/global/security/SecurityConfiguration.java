@@ -3,6 +3,7 @@ package com.newfangled.flockbackend.global.security;
 import com.newfangled.flockbackend.global.jwt.filter.JwtTokenFilter;
 import com.newfangled.flockbackend.global.jwt.provider.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,12 +21,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(WebSecurity web) {
         // http://localhost:8080/swagger-ui/index.html
         web.ignoring().antMatchers(
-                "/v3/api-docs",
+                "/css/**", "/v3/api-docs",
                 "/v2/api-docs", "/configuration/ui",
                 "/swagger-resources", "/configuration/security",
                 "/swagger-ui.html", "/webjars/**", "/swagger/**"
-        );
+        ).requestMatchers(PathRequest.toStaticResources().atCommonLocations());
     }
+
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -38,7 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/users/6").permitAll()
+                .antMatchers("/emailInvalid", "/css/**").permitAll()
                 .antMatchers("/teams/**/join", "/join-member", "/join-mail", "/teams/**/join-mail").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
                 .antMatchers("/swagger-ui.html").permitAll()

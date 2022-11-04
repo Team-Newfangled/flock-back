@@ -19,10 +19,13 @@ public class CommentDto {
     @JsonProperty("writer-id")
     private long writerId;
 
+    private String writer;
+
     public CommentDto(BoardComment boardComment) {
         this.id = boardComment.getId();
         this.comment = boardComment.getContent();
         this.boardId = boardComment.getBoard().getId();
         this.writerId = boardComment.getTeamMember().getMember().getId();
+        this.writer = boardComment.getTeamMember().getMember().getOAuth().getName();
     }
 }
